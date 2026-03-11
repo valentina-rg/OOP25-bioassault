@@ -8,7 +8,6 @@ public class Main {
 
         Game game = new Game();
 
-        // Dobbiamo creare un Thread per eseguire il Game Loop
         Thread gameThread = new Thread(game);
         gameThread.start();
     }
