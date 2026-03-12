@@ -19,7 +19,7 @@ public class Game extends Canvas implements Runnable {
 
         handler = new Handler();
         handler.addObject(new Box(100, 100));
-        handler.addObject(new Box(200, 200));
+        handler.addObject(new Box(200, 100));
 
     }
 
@@ -44,7 +44,7 @@ public class Game extends Canvas implements Runnable {
         long lastTime = System.nanoTime();
         long timer = System.currentTimeMillis();
         double delta = 0;
-        double ns = 10000000 / amountOfTicks;
+        double ns = 1000000000 / amountOfTicks;
         int frames = 0;
 
         while (isRunning) {
@@ -61,7 +61,7 @@ public class Game extends Canvas implements Runnable {
             frames++;
 
             if (System.currentTimeMillis() - timer > 1000) {
-                timer += 10000;
+                timer += 1000;
                 frames = 0;
             }
         }
