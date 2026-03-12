@@ -3,6 +3,7 @@ package it.unibo.bioassault.model;
 import it.unibo.bioassault.control.KeyInput;
 import it.unibo.bioassault.model.player.Player;
 import it.unibo.bioassault.model.viruses.Box;
+import it.unibo.bioassault.view.Camera;
 import it.unibo.bioassault.view.Window;
 
 import java.awt.*;
@@ -14,6 +15,7 @@ public class Game extends Canvas implements Runnable {
     private boolean isRunning = false;
     private Thread thread;
     private Handler handler;
+    private Camera camera;
 
     public Game(){
         new Window(1000, 563, "BioAssault", this);
@@ -22,6 +24,7 @@ public class Game extends Canvas implements Runnable {
 
 
         handler = new Handler();
+        camera = new Camera(0, 0);
         //handler.addObject(new Box(100, 100, ID.Enemy)); //qui chiariamo che l'oggetto è il nemico, non il giocatore
         this.addKeyListener(new KeyInput(handler));
         handler.addObject(new Player(100, 100, ID.Player, handler));
@@ -73,6 +76,13 @@ public class Game extends Canvas implements Runnable {
     }
 
     public void tick(){
+
+        for(int i = 0; i < handler.object.size(); i++){
+            if(handler.object.get(i).getId() == ID.Player){
+                camera.tick(handler.object.get(i));
+            }
+        }
+
         handler.tick();
     }
 
@@ -84,12 +94,19 @@ public class Game extends Canvas implements Runnable {
         }
 
         Graphics g = bs.getDrawGraphics();
-
+        Graphics2D g2d = (Graphics2D) g; 
         ///qui ci vanno le animazioni del gioco, in questo caso coloriamo la finestra di blu
+
         g.setColor(Color.blue);
         g.fillRect(0, 0, 1000, 563);
 
+        g2d.translate(-camera.getX(), -camera.getY());
+
         handler.render(g);
+
+        g2d.translate(camera.getX(), camera.getY());
+
+
 
         ///
 
