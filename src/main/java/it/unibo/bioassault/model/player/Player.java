@@ -23,23 +23,30 @@ public class Player extends GameObject {
         y += velY;
 
         //movimento
-        int dirY = 0;
         if (handler.isUp()) {
-            dirY -= 1;
+            velY = -5;
+        } else if (!handler.isDown()) {
+            velY = 0;
         }
-        if (handler.isDown()) {
-            dirY += 1;
-        }
-        velY = dirY * 5;
 
-        int dirX = 0;
-        if (handler.isLeft()) {
-            dirX -= 1;
+        if (handler.isDown()) {
+            velY = 5;
+        } else if (!handler.isUp()) {
+            velY = 0;
         }
+
+        // X
         if (handler.isRight()) {
-            dirX += 1;
+            velX = 5;
+        } else if (!handler.isLeft()) {
+            velX = 0;
         }
-        velX = dirX * 5;
+
+        if (handler.isLeft()) {
+            velX = -5;
+        } else if (!handler.isRight()) {
+            velX = 0;
+        }
 
     }
 
