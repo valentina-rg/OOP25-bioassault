@@ -16,7 +16,7 @@ public class KeyInput extends KeyAdapter {
         this.handler = handler;
     }
 
-    public void KeyPressed(KeyEvent e){
+    public void keyPressed(KeyEvent e){
         final int key = e.getKeyCode();
         switch (key) {
             case KeyEvent.VK_LEFT:
@@ -50,7 +50,7 @@ public class KeyInput extends KeyAdapter {
 
     }
 
-    public void KeyReleased(KeyEvent e){
+    public void keyReleased(KeyEvent e){
         final int key = e.getKeyCode();
         switch (key) {
             case KeyEvent.VK_LEFT:

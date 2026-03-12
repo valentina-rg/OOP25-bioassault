@@ -1,6 +1,7 @@
 package it.unibo.bioassault.model;
 
 import it.unibo.bioassault.control.KeyInput;
+import it.unibo.bioassault.model.player.Player;
 import it.unibo.bioassault.model.viruses.Box;
 import it.unibo.bioassault.view.Window;
 
@@ -23,6 +24,7 @@ public class Game extends Canvas implements Runnable {
         handler = new Handler();
         //handler.addObject(new Box(100, 100, ID.Enemy)); //qui chiariamo che l'oggetto è il nemico, non il giocatore
         this.addKeyListener(new KeyInput(handler));
+        handler.addObject(new Player(100, 100, ID.Player, handler));
     }
 
     private void start(){

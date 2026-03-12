@@ -32,15 +32,25 @@ public class Player extends GameObject {
         }
         velY = dirY * 5;
 
+        int dirX = 0;
+        if (handler.isLeft()) {
+            dirX -= 1;
+        }
+        if (handler.isRight()) {
+            dirX += 1;
+        }
+        velX = dirX * 5;
+
     }
 
 
     public void render(Graphics g) {
-
+        g.setColor(Color.green);
+        g.fillRect(x, y, 32, 48);
     }
 
 
     public Rectangle getBounds() {
-        return null;
+        return new Rectangle(x, y, 32, 48);
     }
 }
