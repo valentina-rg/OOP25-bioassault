@@ -18,46 +18,45 @@ public class Player extends GameObject {
     }
 
 
+    @Override
     public void tick() {
+        // input -> velocità
+
+        // ASSE Y
+        if (handler.isUp() && !handler.isDown()) {
+            velY = -5;
+        } else if (handler.isDown() && !handler.isUp()) {
+            velY = 5;
+        } else {
+            velY = 0;
+        }
+
+        // ASSE X
+        if (handler.isRight() && !handler.isLeft()) {
+            velX = 5;
+        } else if (handler.isLeft() && !handler.isRight()) {
+            velX = -5;
+        } else {
+            velX = 0;
+        }
+
+        // POSIZIONE SOLO NEL MONDO, NESSUN CLAMP ALLA FINESTRA
         x += velX;
         y += velY;
-
-        //movimento
-        if (handler.isUp()) {
-            velY = -5;
-        } else if (!handler.isDown()) {
-            velY = 0;
-        }
-
-        if (handler.isDown()) {
-            velY = 5;
-        } else if (!handler.isUp()) {
-            velY = 0;
-        }
-
-        // X
-        if (handler.isRight()) {
-            velX = 5;
-        } else if (!handler.isLeft()) {
-            velX = 0;
-        }
-
-        if (handler.isLeft()) {
-            velX = -5;
-        } else if (!handler.isRight()) {
-            velX = 0;
-        }
-
     }
 
 
+
+
+
     public void render(Graphics g) {
-        g.setColor(Color.green);
-        g.fillRect(x, y, 32, 48);
+        g.setColor(Color.blue);
+        g.fillRect((int) x, (int) y, 32, 48);
+
     }
 
 
     public Rectangle getBounds() {
-        return new Rectangle(x, y, 32, 48);
+        return new Rectangle((int) x, (int)y, 32, 48);
     }
 }

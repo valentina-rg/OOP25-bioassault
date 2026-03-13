@@ -1,26 +1,42 @@
 package it.unibo.bioassault.view;
 
+import it.unibo.bioassault.model.Game;
 import it.unibo.bioassault.model.GameObject;
 
 public class Camera {
 
     private float x, y;
 
-    public Camera(float x, float y){
+    public Camera(float x, float y) {
         this.x = x;
         this.y = y;
     }
 
-    public void tick(GameObject object){
+    public void tick(GameObject object) {
 
-        x += ((object.getX() - x) - 1000/2) * 0.05f;
-        y += ((object.getY() - y) - 563/2) * 0.05f;
+        final float halfWidth = Game.WINDOW_WIDTH / 2f;
+        final float halfHeight = Game.WINDOW_HEIGHT / 2f;
 
+        // posizione target: player al centro della finestra
+        float targetX = object.getX() - halfWidth;
+        float targetY = object.getY() - halfHeight;
+
+        // inseguimento morbido
+        x += (targetX - x) * 0.1f;
+        y += (targetY - y) * 0.1f;
+
+        // clamp ai bordi del MONDO
         if (x < 0) x = 0;
-        if (x > 1032) x = 1032;
+        if (x > Game.WORLD_WIDTH - Game.WINDOW_WIDTH) {
+            x = Game.WORLD_WIDTH - Game.WINDOW_WIDTH;
+        }
         if (y < 0) y = 0;
-        if (y > 563 + 16) y = 563 + 16;
+        if (y > Game.WORLD_HEIGHT - Game.WINDOW_HEIGHT) {
+            y = Game.WORLD_HEIGHT - Game.WINDOW_HEIGHT;
+        }
     }
+
+
 
     public float getX() {
         return x;
@@ -37,4 +53,5 @@ public class Camera {
     public void setY(float y) {
         this.y = y;
     }
+
 }

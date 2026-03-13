@@ -23,7 +23,7 @@ public class Box extends GameObject {
 
     public void render(Graphics g) {
         g.setColor(Color.red);
-        g.fillRect(x, y, 32, 32);
+        g.fillRect((int) x, (int) y, 32, 32);
     }
 
 

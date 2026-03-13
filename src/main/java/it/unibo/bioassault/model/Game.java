@@ -1,5 +1,6 @@
 package it.unibo.bioassault.model;
 
+import it.unibo.bioassault.BufferedImageLoader;
 import it.unibo.bioassault.control.KeyInput;
 import it.unibo.bioassault.model.player.Player;
 import it.unibo.bioassault.model.viruses.Box;
@@ -8,6 +9,8 @@ import it.unibo.bioassault.view.Window;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
+
 
 public class Game extends Canvas implements Runnable {
 
@@ -16,9 +19,18 @@ public class Game extends Canvas implements Runnable {
     private Thread thread;
     private Handler handler;
     private Camera camera;
+    private BufferedImage level = null;
 
-    public Game(){
-        new Window(1000, 563, "BioAssault", this);
+    public static final int WINDOW_WIDTH = 1000;
+    public static final int WINDOW_HEIGHT = 563;
+
+    public static final int WORLD_WIDTH = 2000;   // o quello che è
+    public static final int WORLD_HEIGHT = 2000;  // o quello che è
+
+
+
+    public Game() {
+        new Window(WINDOW_WIDTH, WINDOW_HEIGHT, "BioAssault", this);
         start();
 
 
@@ -27,6 +39,10 @@ public class Game extends Canvas implements Runnable {
         camera = new Camera(0, 0);
         //handler.addObject(new Box(100, 100, ID.Enemy)); //qui chiariamo che l'oggetto è il nemico, non il giocatore
         this.addKeyListener(new KeyInput(handler));
+
+        BufferedImageLoader loader = new BufferedImageLoader();
+        level = loader.loadImage("/background/level2.png");
+
         handler.addObject(new Player(100, 100, ID.Player, handler));
     }
 
@@ -75,16 +91,18 @@ public class Game extends Canvas implements Runnable {
         stop();
     }
 
-    public void tick(){
+    public void tick() {
+        // 1) aggiorno tutti gli oggetti (player compreso)
+        handler.tick();
 
-        for(int i = 0; i < handler.object.size(); i++){
-            if(handler.object.get(i).getId() == ID.Player){
+        // 2) trovo il player aggiornato e faccio seguire la camera
+        for (int i = 0; i < handler.object.size(); i++) {
+            if (handler.object.get(i).getId() == ID.Player) {
                 camera.tick(handler.object.get(i));
             }
         }
-
-        handler.tick();
     }
+
 
     public void render(){
         BufferStrategy bs = this.getBufferStrategy();
@@ -94,25 +112,42 @@ public class Game extends Canvas implements Runnable {
         }
 
         Graphics g = bs.getDrawGraphics();
-        Graphics2D g2d = (Graphics2D) g; 
-        ///qui ci vanno le animazioni del gioco, in questo caso coloriamo la finestra di blu
+        Graphics2D g2d = (Graphics2D) g;
 
-        g.setColor(Color.blue);
-        g.fillRect(0, 0, 1000, 563);
+        g.setColor(Color.black);
+        g.fillRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
         g2d.translate(-camera.getX(), -camera.getY());
 
+        if (level != null) {
+            g.drawImage(level, 0, 0, null);
+        } else {
+            g.setColor(Color.darkGray);
+            g.fillRect(0, 0, Game.WORLD_WIDTH, Game.WORLD_HEIGHT);
+        }
+
         handler.render(g);
 
+        // DISATTIVA LA CAMERA
         g2d.translate(camera.getX(), camera.getY());
-
-
-
-        ///
 
         g.dispose();
         bs.show();
     }
 
+    private void loadLevel(BufferedImage image){
+        int w = image.getWidth();
+        int h = image.getHeight();
+
+        for(int xx= 0; xx < w; xx++){
+            for(int yy=0; yy <h; yy++){
+                int pixel = image.getRGB(xx, yy);
+                int red = (pixel >> 16) & 0xff;
+                int green = (pixel >>8) & 0xff;
+                int blue = (pixel) & 0xff;
+
+            }
+        }
+    }
 
 }

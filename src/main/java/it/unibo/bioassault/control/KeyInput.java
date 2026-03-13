@@ -1,7 +1,9 @@
 package it.unibo.bioassault.control;
 
 import it.unibo.bioassault.model.Game;
+import it.unibo.bioassault.model.GameObject;
 import it.unibo.bioassault.model.Handler;
+import it.unibo.bioassault.model.ID;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -18,59 +20,46 @@ public class KeyInput extends KeyAdapter {
 
     public void keyPressed(KeyEvent e){
         final int key = e.getKeyCode();
-        switch (key) {
-            case KeyEvent.VK_LEFT:
-            case KeyEvent.VK_A:
-                handler.setLeft(true);
-                break;
-            case KeyEvent.VK_RIGHT:
-            case KeyEvent.VK_D:
-                handler.setRight(true);
-                break;
-            case KeyEvent.VK_UP:
-            case KeyEvent.VK_W:
-                handler.setUp(true);
-                break;
-            case KeyEvent.VK_DOWN:
-            case KeyEvent.VK_S:
-                handler.setDown(true);
-                break;
-            //case KeyEvent.VK_P:
-                //game.statePause();
-                //break;
-            //case KeyEvent.VK_G:
-                //game.switchDebug();
-                // if (game.isDebugMode()) {
-                // view.showDebug(game.getGraphics());
-                // }
-                //break;
-            default:
-                break;
+        for(int i = 0; i < handler.object.size(); i++) {
+            GameObject tempObject = handler.object.get(i);
+
+            if(tempObject.getId() == ID.Player) {
+                if(key == KeyEvent.VK_W) {
+                    handler.setUp(true);
+                }
+                if(key == KeyEvent.VK_S) {
+                    handler.setDown(true);
+                }
+                if(key == KeyEvent.VK_A) {
+                    handler.setLeft(true);
+                }
+                if(key == KeyEvent.VK_D) {
+                    handler.setRight(true);
+                }
+            }
         }
 
     }
 
     public void keyReleased(KeyEvent e){
         final int key = e.getKeyCode();
-        switch (key) {
-            case KeyEvent.VK_LEFT:
-            case KeyEvent.VK_A:
-                handler.setLeft(false);
-                break;
-            case KeyEvent.VK_RIGHT:
-            case KeyEvent.VK_D:
-                handler.setRight(false);
-                break;
-            case KeyEvent.VK_UP:
-            case KeyEvent.VK_W:
-                handler.setUp(false);
-                break;
-            case KeyEvent.VK_DOWN:
-            case KeyEvent.VK_S:
-                handler.setDown(false);
-                break;
-            default:
-                break;
+        for(int i = 0; i < handler.object.size(); i++) {
+            GameObject tempObject = handler.object.get(i);
+
+            if(tempObject.getId() == ID.Player) {
+                if(key == KeyEvent.VK_W) {
+                    handler.setUp(false);
+                }
+                if(key == KeyEvent.VK_S) {
+                    handler.setDown(false);
+                }
+                if(key == KeyEvent.VK_A) {
+                    handler.setLeft(false);
+                }
+                if(key == KeyEvent.VK_D) {
+                    handler.setRight(false);
+                }
+            }
         }
     }
 }

@@ -5,7 +5,7 @@ import java.util.LinkedList;
 
 public class Handler {
 
-    LinkedList<GameObject> object = new LinkedList<GameObject>();//array di oggetti
+    public LinkedList<GameObject> object = new LinkedList<GameObject>();//array di oggetti
 
 
     private boolean up = false, down = false, right = false, left = false;
