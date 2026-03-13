@@ -3,13 +3,15 @@ package it.unibo.bioassault.model;
 import it.unibo.bioassault.BufferedImageLoader;
 import it.unibo.bioassault.control.KeyInput;
 import it.unibo.bioassault.model.player.Player;
-import it.unibo.bioassault.model.viruses.Box;
+import it.unibo.bioassault.model.viruses.Virus;
 import it.unibo.bioassault.view.Camera;
 import it.unibo.bioassault.view.Window;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+
+import static it.unibo.bioassault.model.ID.Enemy;
 
 
 public class Game extends Canvas implements Runnable {
@@ -27,6 +29,7 @@ public class Game extends Canvas implements Runnable {
     public static final int WORLD_WIDTH = 2000;   // o quello che è
     public static final int WORLD_HEIGHT = 2000;  // o quello che è
 
+    private int initialEnemies = 10; // quanti nemici iniziali
 
 
     public Game() {
@@ -42,8 +45,12 @@ public class Game extends Canvas implements Runnable {
 
         BufferedImageLoader loader = new BufferedImageLoader();
         level = loader.loadImage("/background/level2.png");
+        //loadLevel(level);
+
 
         handler.addObject(new Player(100, 100, ID.Player, handler));
+        handler.addObject(new Virus(200, 200, ID.Enemy, handler));
+
     }
 
     private void start(){
@@ -145,6 +152,15 @@ public class Game extends Canvas implements Runnable {
                 int red = (pixel >> 16) & 0xff;
                 int green = (pixel >>8) & 0xff;
                 int blue = (pixel) & 0xff;
+
+                if(blue == 255){
+                    handler.addObject(new Player(xx*32, yy*32, ID.Player, handler));
+
+                }
+
+                if(red == 0 && green == 255 && blue == 0){
+                    handler.addObject(new Virus(xx, yy, Enemy, handler));
+                }
 
             }
         }
