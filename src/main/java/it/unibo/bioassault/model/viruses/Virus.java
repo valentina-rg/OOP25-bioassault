@@ -19,6 +19,8 @@ public class Virus extends GameObject {
     int choose = 0;
     int hp = 100;
 
+    // Nuova variabile per gestire l'animazione di rotazione degli spike
+    private double spikeAngleOffset = 0;
 
     static {
         try {
@@ -27,7 +29,7 @@ public class Virus extends GameObject {
             );
         } catch (IOException | IllegalArgumentException e) {
             // log di errore chiaro
-            System.err.println("Impossibile caricare /sprites/virus.png");
+            System.err.println("Impossibile caricare /sprite/virus/sprite-virus.png");
             e.printStackTrace();
             sprite = null; // fallback
         }
@@ -36,10 +38,6 @@ public class Virus extends GameObject {
     public Virus(int x, int y, ID id, Handler handler) {
         super(x, y, id);
         this.handler = handler;
-
-
-
-
 
         // velocità iniziale random
         velX = r.nextInt(7) - 3; // -3..3
@@ -100,29 +98,50 @@ public class Virus extends GameObject {
         if (y <= 0 || y >= Game.WORLD_HEIGHT - 32) {
             velY *= -1;
         }
+
+
+        spikeAngleOffset += 0.05;
     }
 
     @Override
     public void render(Graphics g) {
+        Graphics2D g2d = (Graphics2D) g;
+
+
+        int centerX = (int) x + 30;
+        int centerY = (int) y + 30;
+
+        int numSpikes = 12;
+        int innerRadius = 20;
+        int outerRadius = 25;
+
+        g2d.setColor(new Color(100, 0, 255)); // Colore rosso scuro per gli spike
+        g2d.setStroke(new BasicStroke(3));  // Spessore della linea: 3 pixel
+
+        for (int i = 0; i < numSpikes; i++) {
+            double angle = (2 * Math.PI * i / numSpikes) + spikeAngleOffset;
+
+            int x1 = (int) (centerX + Math.cos(angle) * innerRadius);
+            int y1 = (int) (centerY + Math.sin(angle) * innerRadius);
+            int x2 = (int) (centerX + Math.cos(angle) * outerRadius);
+            int y2 = (int) (centerY + Math.sin(angle) * outerRadius);
+
+            g2d.drawLine(x1, y1, x2, y2);
+        }
+
+        g2d.setStroke(new BasicStroke(1));
+
         if (sprite != null) {
             g.drawImage(sprite, (int) x, (int) y, 60, 60, null);
         } else {
-            // fallback visivo se il PNG non è stato caricato
             g.setColor(Color.yellow);
             g.fillRect((int) x, (int) y, 32, 32);
         }
 
-        Graphics2D g2d = (Graphics2D) g;
-        g.setColor(Color.green);
-        //g2d.draw(getBoundsBig());
     }
 
     @Override
     public Rectangle getBounds() {
         return new Rectangle((int) x, (int) y, 32, 32);
     }
-
-    //public Rectangle getBoundsBig() {
-        //return new Rectangle((int) x - 16, (int) y - 16, 64, 64);
-   // }
 }
