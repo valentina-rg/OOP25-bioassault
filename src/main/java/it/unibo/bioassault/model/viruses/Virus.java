@@ -5,19 +5,41 @@ import it.unibo.bioassault.model.GameObject;
 import it.unibo.bioassault.model.Handler;
 import it.unibo.bioassault.model.ID;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.Random;
 
 public class Virus extends GameObject {
 
     private Handler handler;
+    private static BufferedImage sprite;
     Random r = new Random();
     int choose = 0;
     int hp = 100;
 
+
+    static {
+        try {
+            sprite = ImageIO.read(
+                    Virus.class.getResource("/sprite/virus/sprite-virus.png")
+            );
+        } catch (IOException | IllegalArgumentException e) {
+            // log di errore chiaro
+            System.err.println("Impossibile caricare /sprites/virus.png");
+            e.printStackTrace();
+            sprite = null; // fallback
+        }
+    }
+
     public Virus(int x, int y, ID id, Handler handler) {
         super(x, y, id);
         this.handler = handler;
+
+
+
+
 
         // velocità iniziale random
         velX = r.nextInt(7) - 3; // -3..3
@@ -82,12 +104,17 @@ public class Virus extends GameObject {
 
     @Override
     public void render(Graphics g) {
-        g.setColor(Color.yellow);
-        g.fillRect((int) x, (int) y, 32, 32);
+        if (sprite != null) {
+            g.drawImage(sprite, (int) x, (int) y, 60, 60, null);
+        } else {
+            // fallback visivo se il PNG non è stato caricato
+            g.setColor(Color.yellow);
+            g.fillRect((int) x, (int) y, 32, 32);
+        }
 
         Graphics2D g2d = (Graphics2D) g;
         g.setColor(Color.green);
-        g2d.draw(getBoundsBig());
+        //g2d.draw(getBoundsBig());
     }
 
     @Override
@@ -95,7 +122,7 @@ public class Virus extends GameObject {
         return new Rectangle((int) x, (int) y, 32, 32);
     }
 
-    public Rectangle getBoundsBig() {
-        return new Rectangle((int) x - 16, (int) y - 16, 64, 64);
-    }
+    //public Rectangle getBoundsBig() {
+        //return new Rectangle((int) x - 16, (int) y - 16, 64, 64);
+   // }
 }
