@@ -49,7 +49,7 @@ public class Game extends Canvas implements Runnable {
 
 
         handler.addObject(new Player(100, 100, ID.Player, handler));
-        handler.addObject(new Virus(200, 200, ID.Enemy, handler));
+        handler.addObject(new Virus(600, 300, ID.Enemy, handler));
 
     }
 

@@ -17,6 +17,9 @@ public class Player extends GameObject {
         this.handler = handler;
     }
 
+    public boolean hasStartedMoving = false;
+
+
 
     @Override
     public void tick() {
@@ -43,6 +46,10 @@ public class Player extends GameObject {
         // POSIZIONE SOLO NEL MONDO, NESSUN CLAMP ALLA FINESTRA
         x += velX;
         y += velY;
+
+        if (velX != 0 || velY != 0) {
+            hasStartedMoving = true;
+        }
     }
 
 
