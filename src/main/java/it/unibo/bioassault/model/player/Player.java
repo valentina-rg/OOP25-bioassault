@@ -43,7 +43,6 @@ public class Player extends GameObject {
             velX = 0;
         }
 
-        // POSIZIONE SOLO NEL MONDO, NESSUN CLAMP ALLA FINESTRA
         x += velX;
         y += velY;
 

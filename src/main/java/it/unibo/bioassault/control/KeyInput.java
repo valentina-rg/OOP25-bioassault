@@ -1,6 +1,5 @@
 package it.unibo.bioassault.control;
 
-import it.unibo.bioassault.model.Game;
 import it.unibo.bioassault.model.GameObject;
 import it.unibo.bioassault.model.Handler;
 import it.unibo.bioassault.model.ID;
@@ -10,11 +9,11 @@ import java.awt.event.KeyEvent;
 
 public class KeyInput extends KeyAdapter {
 
-    //private final Game game;
+
     private final Handler handler;
 
     public KeyInput(final Handler handler) {
-        //this.game = game;
+
         this.handler = handler;
     }
 
