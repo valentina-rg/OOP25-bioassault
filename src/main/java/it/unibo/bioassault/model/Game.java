@@ -3,14 +3,14 @@ package it.unibo.bioassault.model;
 import it.unibo.bioassault.BufferedImageLoader;
 import it.unibo.bioassault.control.KeyInput;
 import it.unibo.bioassault.model.player.Player;
-import it.unibo.bioassault.model.viruses.Virus;
+import it.unibo.bioassault.model.viruses.types.Bacteria;
 import it.unibo.bioassault.view.Camera;
 import it.unibo.bioassault.view.Window;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
-
+import it.unibo.bioassault.model.viruses.types.SpikyVirus;
 import static it.unibo.bioassault.model.ID.Enemy;
 
 
@@ -40,16 +40,15 @@ public class Game extends Canvas implements Runnable {
 
         handler = new Handler();
         camera = new Camera(0, 0);
-        //handler.addObject(new Box(100, 100, ID.Enemy)); //qui chiariamo che l'oggetto è il nemico, non il giocatore
         this.addKeyListener(new KeyInput(handler));
 
         BufferedImageLoader loader = new BufferedImageLoader();
         level = loader.loadImage("/background/level2.png");
-        //loadLevel(level);
 
 
         handler.addObject(new Player(100, 100, ID.Player, handler));
-        handler.addObject(new Virus(600, 300, ID.Enemy, handler));
+        handler.addObject(new SpikyVirus(600, 300, ID.Enemy, handler));
+        handler.addObject(new Bacteria(600, 450, ID.Enemy, handler));
 
     }
 
@@ -159,7 +158,7 @@ public class Game extends Canvas implements Runnable {
                 }
 
                 if(red == 0 && green == 255 && blue == 0){
-                    handler.addObject(new Virus(xx, yy, Enemy, handler));
+                    handler.addObject(new SpikyVirus(xx, yy, Enemy, handler));
                 }
 
             }
