@@ -3,6 +3,7 @@ package it.unibo.bioassault.model;
 import it.unibo.bioassault.BufferedImageLoader;
 import it.unibo.bioassault.control.KeyInput;
 import it.unibo.bioassault.model.player.Player;
+import it.unibo.bioassault.model.viruses.VirusSpawner;
 import it.unibo.bioassault.model.viruses.types.Bacteria;
 import it.unibo.bioassault.view.Camera;
 import it.unibo.bioassault.view.Window;
@@ -22,6 +23,7 @@ public class Game extends Canvas implements Runnable {
     private Handler handler;
     private Camera camera;
     private BufferedImage level = null;
+    private VirusSpawner spawner;
 
     public static final int WINDOW_WIDTH = 1000;
     public static final int WINDOW_HEIGHT = 563;
@@ -47,8 +49,7 @@ public class Game extends Canvas implements Runnable {
 
 
         handler.addObject(new Player(100, 100, ID.Player, handler));
-        handler.addObject(new SpikyVirus(600, 300, ID.Enemy, handler));
-        handler.addObject(new Bacteria(600, 450, ID.Enemy, handler));
+        spawner = new VirusSpawner(handler);
 
     }
 
@@ -98,17 +99,23 @@ public class Game extends Canvas implements Runnable {
     }
 
     public void tick() {
-        // 1) aggiorno tutti gli oggetti (player compreso)
+        if (handler == null) {
+            return;
+        }
+
         handler.tick();
 
-        // 2) trovo il player aggiornato e faccio seguire la camera
-        for (int i = 0; i < handler.object.size(); i++) {
-            if (handler.object.get(i).getId() == ID.Player) {
-                camera.tick(handler.object.get(i));
+        for (GameObject obj : handler.object) {
+            if (obj.getId() == ID.Player) {
+                camera.tick(obj);
+                break;
             }
         }
-    }
 
+        if (spawner != null) {
+            spawner.tick();
+        }
+    }
 
     public void render(){
         BufferStrategy bs = this.getBufferStrategy();
