@@ -3,9 +3,7 @@ package it.unibo.bioassault.model.viruses;
 import java.util.stream.Stream;
 import it.unibo.bioassault.model.Handler;
 
-// NOTA: Se hai un'interfaccia ITickingObject nel tuo progetto,
-// scommenta l'import qui sotto e aggiungi "implements ITickingObject" alla classe
-// import it.unibo.bioassault.control.ITickingObject;
+
 
 /**
  * Class to manage spawn of viruses.
@@ -68,7 +66,6 @@ public class VirusSpawner {
         }
     }
 
-    // @Override // Scommenta se usi l'interfaccia ITickingObject
     public final void tick() {
         spawnViruses();
     }

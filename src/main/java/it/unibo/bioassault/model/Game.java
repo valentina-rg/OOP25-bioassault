@@ -4,7 +4,6 @@ import it.unibo.bioassault.BufferedImageLoader;
 import it.unibo.bioassault.control.KeyInput;
 import it.unibo.bioassault.model.player.Player;
 import it.unibo.bioassault.model.viruses.VirusSpawner;
-import it.unibo.bioassault.model.viruses.types.Bacteria;
 import it.unibo.bioassault.view.Camera;
 import it.unibo.bioassault.view.Window;
 
@@ -28,8 +27,8 @@ public class Game extends Canvas implements Runnable {
     public static final int WINDOW_WIDTH = 1000;
     public static final int WINDOW_HEIGHT = 563;
 
-    public static final int WORLD_WIDTH = 2000;   // o quello che è
-    public static final int WORLD_HEIGHT = 2000;  // o quello che è
+    public static final int WORLD_WIDTH = 2000;
+    public static final int WORLD_HEIGHT = 2000;
 
     private int initialEnemies = 10; // quanti nemici iniziali
 

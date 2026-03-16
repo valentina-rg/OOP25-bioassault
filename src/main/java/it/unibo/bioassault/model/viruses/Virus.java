@@ -134,9 +134,7 @@ public abstract class Virus extends GameObject {
      */
     public void setIsBig(boolean isBig) {
         if (isBig) {
-            this.hp *= 2; // Esempio: Raddoppia la salute
-            // Qui potrai aggiungere codice per raddoppiare anche
-            // le dimensioni della hitbox o rallentarlo!
+            this.hp *= 2;
         }
     }
 
