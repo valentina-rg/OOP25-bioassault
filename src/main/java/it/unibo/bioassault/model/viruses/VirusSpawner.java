@@ -49,7 +49,7 @@ public class VirusSpawner {
         elapsedTime = currentTime - lastSpawnTime;
 
         if (diff() > TIME_LEVEL_1) {
-            spawnRate = 2;
+            spawnRate = 1;
         }
 
         if (elapsedTime >= 1000 / spawnRate) {
@@ -61,7 +61,7 @@ public class VirusSpawner {
         }
 
         if (diff() > TIME_LEVEL_3) {
-            spawnRate = 3;
+            spawnRate = 2;
             flood();
         }
     }
