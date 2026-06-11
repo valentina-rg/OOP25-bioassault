@@ -11,6 +11,7 @@ import java.awt.*;
 public class Player extends GameObject {
 
     Handler handler;
+    private int hp = 100; // Punti vita iniziali della cellula
 
     public Player(int x, int y, ID id, Handler handler) {
         super(x, y, id);
@@ -64,5 +65,30 @@ public class Player extends GameObject {
 
     public Rectangle getBounds() {
         return new Rectangle((int) x, (int)y, 32, 48);
+    }
+
+    // Applica un danno alla cellula
+    public void takeDamage(final int damage) {
+
+        if (damage < 0) { // Il danno non può essere negativo
+         throw new IllegalArgumentException(
+               "Il danno non può essere negativo"
+         );
+        }
+
+     this.hp = Math.max(
+            0,                  // HP minimi consentiti
+            this.hp - damage    // HP dopo il danno
+        );
+    }
+
+    // Restituisce gli HP correnti della cellula
+    public int getHp() {
+        return this.hp; // Restituisce gli HP attuali
+    }
+
+    // Verifica se la cellula è morta
+    public boolean isDead() {
+      return this.hp <= 0; // Morta se gli HP sono pari a zero
     }
 }
