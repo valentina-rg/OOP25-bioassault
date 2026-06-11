@@ -1,0 +1,174 @@
+package main.java.it.unibo.bioassault.model.player;
+
+import it.unibo.bioassault.model.Handler;
+import it.unibo.bioassault.model.ID;
+import it.unibo.bioassault.model.player.Player;
+
+public class PlayerStats extends Player {
+
+    private float damageMult  = 1.00f;
+    private float attackSpeed = 1.00f;
+    private float areaMult    = 1.00f;
+    private int   projectiles = 1;
+    private float critChance  = 0.05f;
+    private float critMult    = 2.00f;
+
+    private int   maxHp       = 100;
+    private int   currentHp   = 100;
+    private float defense     = 0.00f;
+    private float lifesteal   = 0.00f;
+
+    private float moveSpeed   = 150.0f;
+
+    private float pickupRadius = 50.0f;
+    private float xpGainMult   = 1.00f;
+
+
+    public PlayerStats(int x, int y, ID id, Handler handler) {
+        super(x, y, id, handler);
+    }
+
+
+    public float getDamageMult() { 
+        return damageMult; 
+    }
+
+    public void  setDamageMult(float v) { 
+        this.damageMult = v; 
+    }
+
+    public float getAttackSpeed() { 
+        return attackSpeed; 
+    }
+
+    public void  setAttackSpeed(float v){
+        this.attackSpeed = v;
+    }
+
+    public float getAreaMult() { 
+        return areaMult; 
+    }
+
+    public void  setAreaMult(float v) { 
+        this.areaMult = v; 
+    }
+
+    public int   getProjectiles() { 
+        return projectiles; 
+    }
+    
+    public void  setProjectiles(int v) {
+        this.projectiles = v; 
+    }
+
+    public float getCritChance() { 
+        return critChance; 
+    }
+
+    public void  setCritChance(float v) { 
+        this.critChance = v; 
+    }
+
+    public float getCritMult() { 
+        return critMult; 
+    }
+
+    public void  setCritMult(float v) { 
+        this.critMult = v; 
+    }
+
+    public int   getMaxHp() { 
+        return maxHp; 
+    }
+
+    public void  setMaxHp(int v) { 
+        this.maxHp = v; 
+    }
+
+    public int   getCurrentHp() { 
+        return currentHp; 
+    }
+
+    public void  setCurrentHp(int v) { 
+        this.currentHp = v; 
+    }
+
+    public float getDefense() { 
+        return defense; 
+    }
+
+    public void  setDefense(float v) { 
+        this.defense = v; 
+    }
+
+    public float getLifesteal() { 
+        return lifesteal; 
+    }
+
+    public void  setLifesteal(float v) { 
+        this.lifesteal = v; 
+    }
+
+    public float getMoveSpeed() { 
+        return moveSpeed; 
+    }
+
+    public void  setMoveSpeed(float v) { 
+        this.moveSpeed = v; 
+    }
+
+    public float getPickupRadius() {
+        return this.pickupRadius;
+    }
+
+    public void  setPickupRadius(float v){
+        this.pickupRadius = v;
+    }
+
+    public float getXpGainMult() { 
+        return xpGainMult; 
+    }
+
+    public void  setXpGainMult(float v) { 
+        this.xpGainMult = v; 
+    }
+
+    /** Calcola il danno finale tenendo conto di critico e moltiplicatori. */
+    public float computeDamage(float baseDamage) {
+        float dmg = baseDamage * damageMult;
+        if (Math.random() < critChance) dmg *= critMult;
+        return dmg;
+    }
+
+    /** Calcola i danni effettivamente subiti dopo la difesa. */
+    public int receiveDamage(int rawDamage) {
+        int actual = Math.max(1, (int)(rawDamage * (1f - defense)));
+        currentHp = Math.max(0, currentHp - actual);
+        return actual;
+    }
+
+    /** Recupera HP da lifesteal. */
+    public void applyLifesteal(float damageDealt) {
+        int healed = (int)(damageDealt * lifesteal);
+        currentHp = Math.min(maxHp, currentHp + healed);
+    }
+
+    public boolean isAlive() { 
+        return currentHp > 0; 
+    }
+
+    @Override
+    public String toString() {
+        return String.format(
+            "Level Stats:\n" +
+            "  Damage     : x%.2f  |  Attack Speed: x%.2f  |  Area: x%.2f\n" +
+            "  Projectiles: %d     |  Crit: %.0f%%          |  CritMult: x%.1f\n" +
+            "  HP         : %d/%d  |  Defense: %.0f%%       |  Lifesteal: %.0f%%\n" +
+            "  Move Speed : %.0f   |  Pickup Radius: %.0f   |  XP Mult: x%.2f",
+            damageMult, attackSpeed, areaMult,
+            projectiles, critChance * 100, critMult,
+            currentHp, maxHp, defense * 100, lifesteal * 100,
+            moveSpeed, pickupRadius, xpGainMult
+        );
+    }
+}
