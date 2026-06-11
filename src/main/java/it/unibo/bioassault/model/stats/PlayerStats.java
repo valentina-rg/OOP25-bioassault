@@ -1,15 +1,12 @@
-package main.java.it.unibo.bioassault.model.player;
+package main.java.it.unibo.bioassault.model.stats;
 
-import it.unibo.bioassault.model.Handler;
-import it.unibo.bioassault.model.ID;
-import it.unibo.bioassault.model.player.Player;
 /**
  * Manages the character's vital, offensive, and defensive stats.
  * Contains base values balanced for Survivor-style gameplay and the
  * core methods for damage calculation and hit point management.
  */
 
-public class PlayerStats extends Player {
+public class PlayerStats {
 
     private float damageMult  = 1.00f;
     private float attackSpeed = 1.00f;
@@ -27,12 +24,6 @@ public class PlayerStats extends Player {
 
     private float pickupRadius = 50.0f;
     private float xpGainMult   = 1.00f;
-
-
-    public PlayerStats(int x, int y, ID id, Handler handler) {
-        super(x, y, id, handler);
-    }
-
 
     public float getDamageMult() { 
         return damageMult; 
