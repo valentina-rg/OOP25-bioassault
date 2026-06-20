@@ -74,10 +74,19 @@ public class Upgrade {
         return maxStacks == 0 || stackCount < maxStacks;
     }
 
-    public String getName()        { return name; }
-    public String getDescription() { return description; }
-    public int    getStackCount()  { return stackCount; }
-    public int    getMaxStacks()   { return maxStacks; }
+    public String getName() { 
+        return name; 
+    }
+    public String getDescription() { 
+        return description; 
+    }
+    public int    getStackCount() { 
+        return stackCount; 
+    }
+
+    public int    getMaxStacks() { 
+        return maxStacks; 
+    }
 
     @Override
     public String toString() {
