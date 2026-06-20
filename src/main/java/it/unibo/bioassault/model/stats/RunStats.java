@@ -12,13 +12,13 @@ import java.util.Map;
  */
 
 public class RunStats{
-    private final float secondsToMinutes = 60.0;    
-    private final long killsMultiplier = 10L;
-    private final float damageMultiplier = 0.5f;
-    private final int survivingBonus = 2;
-    private final long levelBonus = 500L;
-    private final long maxSpeedBonus = 10_000L;
-    private final long bonusReducer = 10L;
+    private static final float SECOND_TO_MINUTES = 60.0;    
+    private static final long KILLS_MULTIPLIER = 10L;
+    private static final float DAMAGE_MULTIPLIER = 0.5f;
+    private static final int SURVIVING_BONUS = 2;
+    private static final long LEVEL_BONUS = 500L;
+    private static final long MAX_SPEED_BONUS = 10_000L;
+    private static final long BONUS_REDUCER = 10L;
     private final long startTimeMs = System.currentTimeMillis();
     private long endTimeMs = 0;
 
@@ -115,7 +115,7 @@ public class RunStats{
      * * @return Float average of kills completed per individual minute.
      */
     public float getKillsPerMinute(){
-        double  minutes = getSurvivalTime().toSeconds() / secondsToMinutes;
+        double  minutes = getSurvivalTime().toSeconds() / SECOND_TO_MINUTES;
          return minutes > 0 ? kills / (float) minutes : 0;
     }
 
@@ -126,17 +126,17 @@ public class RunStats{
      * @return Total structured score ranking numeric.
      */
     public long computeFinalScore(int level){
-        long baseScore = (long)(kills * killsMultiplier + totalXp + damageDealt * damageMultiplier);
+        long baseScore = (long)(kills * KILLS_MULTIPLIER + totalXp + damageDealt * DAMAGE_MULTIPLIER);
 
         if(survived) {
-            baseScore *= survivingBonus;
+            baseScore *= SURVIVING_BONUS;
         }
 
-        baseScore += level * levelBonus;
+        baseScore += level * LEVEL_BONUS;
 
         long seconds = getSurvivalTime().toSeconds();
         if(seconds > 0) {
-            baseScore += Math.max(0, maxSpeedBonus - seconds * bonusReducer);
+            baseScore += Math.max(0, MAX_SPEED_BONUS - seconds * BONUS_REDUCER);
         }
 
         return baseScore;
