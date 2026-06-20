@@ -17,7 +17,8 @@ public class RunStats{
     private final float damageMultiplier = 0.5f;
     private final int survivingBonus = 2;
     private final long levelBonus = 500L;
-    //private final long speedBonus =
+    private final long maxSpeedBonus = 10_000L;
+    private final long bonusReducer = 10L;
     private final long startTimeMs = System.currentTimeMillis();
     private long endTimeMs = 0;
 
@@ -128,14 +129,14 @@ public class RunStats{
         long baseScore = (long)(kills * killsMultiplier + totalXp + damageDealt * damageMultiplier);
 
         if(survived) {
-            baseScore *= 2;
+            baseScore *= survivingBonus;
         }
 
         baseScore += level * levelBonus;
 
         long seconds = getSurvivalTime().toSeconds();
-        if(seconds) {
-            baseScore += Math.max(0, 10_000L - seconds * 10L);
+        if(seconds > 0) {
+            baseScore += Math.max(0, maxSpeedBonus - seconds * bonusReducer);
         }
 
         return baseScore;
