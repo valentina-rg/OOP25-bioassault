@@ -1,51 +1,36 @@
 package it.unibo.bioassault.model.combat;
 
-import it.unibo.bioassault.model.GameObject;
-import it.unibo.bioassault.model.Handler;
-import it.unibo.bioassault.model.ID;
-import it.unibo.bioassault.model.viruses.Virus;
+/**
+ * Classe base per tutte le armi del gioco.
+ */
+public abstract class Weapon {
 
-import java.awt.*;
-import java.util.LinkedList;
+    protected int damage; // Danno inflitto dall'arma
 
-public class Projectile extends GameObject {
-
-    private final Handler handler; // Handler degli oggetti di gioco
-    private final int damage; // Danno del proiettile
-    private final int size = 8; // Dimensione del proiettile
-
-    public Projectile(final int x, final int y, final Handler handler, final float velX, final float velY, final int damage) {
-        super(x, y, ID.Projectile);
-        this.handler = handler;
-        this.velX = velX;
-        this.velY = velY;
-        this.damage = damage;
+    /**
+     * Costruttore dell'arma.
+     *
+     * @param damage danno inflitto dall'arma
+     */
+    public Weapon(final int damage) {
+        this.damage = damage; // Inizializza il danno dell'arma
     }
 
-    @Override
-    public void tick() {
-        this.x += this.velX; // Sposta il proiettile sull'asse X
-        this.y += this.velY; // Sposta il proiettile sull'asse Y
-
-        for (final GameObject obj : new LinkedList<>(handler.object)) { // Copia della lista per evitare problemi durante la rimozione
-            if (obj instanceof Virus virus) { // Controlla solo i virus
-                if (this.getBounds().intersects(virus.getBounds())) { // Collisione proiettile-virus
-                    virus.takeDamage(this.damage); // Il virus subisce danno
-                    handler.removeObject(this); // Il proiettile sparisce dopo il colpo
-                    return;
-                }
-            }
-        }
+    /**
+     * Restituisce il danno dell'arma.
+     *
+     * @return danno dell'arma
+     */
+    public int getDamage() {
+        return this.damage; // Restituisce il danno corrente
     }
 
-    @Override
-    public void render(final Graphics g) {
-        g.setColor(Color.GREEN);
-        g.fillOval((int) this.x, (int) this.y, this.size, this.size);
-    }
-
-    @Override
-    public Rectangle getBounds() {
-        return new Rectangle((int) this.x, (int) this.y, this.size, this.size);
+    /**
+     * Modifica il danno dell'arma.
+     *
+     * @param damage nuovo danno dell'arma
+     */
+    public void setDamage(final int damage) {
+        this.damage = damage; // Aggiorna il danno dell'arma
     }
 }
