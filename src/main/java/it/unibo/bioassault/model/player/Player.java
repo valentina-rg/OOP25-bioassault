@@ -4,6 +4,7 @@ import it.unibo.bioassault.model.combat.Projectile;
 import it.unibo.bioassault.model.GameObject;
 import it.unibo.bioassault.model.Handler;
 import it.unibo.bioassault.model.ID;
+import it.unibo.bioassault.model.viruses.Virus;
 
 import java.awt.*;
 
@@ -68,7 +69,7 @@ public class Player extends GameObject {
         }
 
         if (this.shootCooldown == 0) { // Se il player può sparare
-            handler.addObject(new Projectile((int) this.x + 32, (int) this.y + 20, handler, 8, 0, 10)); // Spara un proiettile verso destra
+            handler.addObject(new Projectile((int) this.x + 32, (int) this.y + 20, handler, 8, 0, 10, id)); // Spara un proiettile verso destra
             this.shootCooldown = 30; // Imposta il cooldown dello sparo
         }
     }

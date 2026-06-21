@@ -14,8 +14,8 @@ public class Projectile extends GameObject {
     private final int damage; // Danno del proiettile
     private final int size = 8; // Dimensione del proiettile
 
-    public Projectile(final int x, final int y, final Handler handler, final float velX, final float velY, final int damage) {
-        super(x, y, ID.Projectile);
+    public Projectile(final int x, final int y, final Handler handler, final float velX, final float velY, final int damage, ID id) {
+        super(x, y, id);
         this.handler = handler;
         this.velX = velX;
         this.velY = velY;

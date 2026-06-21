@@ -1,5 +1,7 @@
 package it.unibo.bioassault.model.combat;
 
+import it.unibo.bioassault.model.combat.weapons.Weapon;
+
 /**
  * Arma che utilizza interferoni per colpire i virus.
  */

@@ -52,7 +52,8 @@ public abstract class Virus extends GameObject {
                 (it.unibo.bioassault.model.player.Player) player;
 
         if (!p.hasStartedMoving) {
-            velX = 0; velY = 0;
+            velX = 0;
+            velY = 0;
         } else {
             float dx = p.getX() - x;
             float dy = p.getY() - y;
@@ -137,35 +138,37 @@ public abstract class Virus extends GameObject {
             this.hp *= 2;
         }
     }
-  // Applica un danno al virus
-public void takeDamage(final int damage) {
 
-    if (damage < 0) { // Il danno non può essere negativo
-        throw new IllegalArgumentException("Il danno non può essere negativo");
+    // Applica un danno al virus
+    public void takeDamage(final int damage) {
+
+        if (damage < 0) { // Il danno non può essere negativo
+            throw new IllegalArgumentException("Il danno non può essere negativo");
+        }
+
+        this.hp = Math.max(
+                0,                  // HP minimi consentiti
+                this.hp - damage    // HP dopo il danno
+        );
+
+        this.checkDeath(); // Dopo aver subito danno, controlla se il virus deve morire
     }
 
-    this.hp = Math.max(
-        0,                  // HP minimi consentiti
-        this.hp - damage    // HP dopo il danno
-    );
+    // Restituisce gli HP correnti del virus
+    public int getHp() {
+        return this.hp; // Restituisce gli HP attuali del virus
+    }
 
-    this.checkDeath(); // Dopo aver subito danno, controlla se il virus deve morire
-}
+    // Verifica se il virus è morto
+    public boolean isDead() {
+        return this.hp <= 0; // Il virus è morto se gli HP sono pari a zero
+    }
 
-// Restituisce gli HP correnti del virus
-public int getHp() {
-    return this.hp; // Restituisce gli HP attuali del virus
-}
+    // Rimuove il virus dal gioco se è morto
+    private void checkDeath() {
 
-// Verifica se il virus è morto
-public boolean isDead() {
-    return this.hp <= 0; // Il virus è morto se gli HP sono pari a zero
-}
-
-// Rimuove il virus dal gioco se è morto
-private void checkDeath() {
-
-    if (this.isDead()) { // Se gli HP sono finiti
-        this.handler.removeObject(this); // Rimuove questo virus dalla lista degli oggetti di gioco
+        if (this.isDead()) { // Se gli HP sono finiti
+            this.handler.removeObject(this); // Rimuove questo virus dalla lista degli oggetti di gioco
+        }
     }
 }

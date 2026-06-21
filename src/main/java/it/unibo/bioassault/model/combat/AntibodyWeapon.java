@@ -1,5 +1,7 @@
 package it.unibo.bioassault.model.combat;
 
+import it.unibo.bioassault.model.combat.weapons.Weapon;
+
 /**
  * Arma che spara anticorpi contro i virus.
  */
