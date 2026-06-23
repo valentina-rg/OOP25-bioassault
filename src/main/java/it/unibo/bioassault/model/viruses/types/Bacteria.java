@@ -12,6 +12,9 @@ import java.io.IOException;
 public class Bacteria extends Virus {
 
     private static BufferedImage sprite;
+    private static final int BOSS_SIZE = 96;
+    private boolean isBoss = false;
+
 
     static {
         try {
@@ -39,7 +42,8 @@ public class Bacteria extends Virus {
     @Override
     public void render(Graphics g) {
         if (sprite != null) {
-            g.drawImage(sprite, (int) x, (int) y, 60, 60, null);
+            int drawSize = isBoss ? BOSS_SIZE : 60;
+            g.drawImage(sprite, (int) x, (int) y, drawSize, drawSize, null);
         } else {
             g.setColor(Color.GREEN);
             g.fillOval((int) x, (int) y, 32, 32);
@@ -47,7 +51,16 @@ public class Bacteria extends Virus {
     }
 
     @Override
+    public void setIsBig(boolean isBig) {
+        super.setIsBig(isBig); // HP x2
+        if (isBig) {
+            this.isBoss = true;
+        }
+    }
+
+    @Override
     public Rectangle getBounds() {
-        return new Rectangle((int) x, (int) y, 32, 32);
+        int size = isBoss ? BOSS_SIZE : 32;
+        return new Rectangle((int) x, (int) y, size, size);
     }
 }

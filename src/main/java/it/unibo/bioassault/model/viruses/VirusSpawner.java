@@ -15,7 +15,8 @@ public class VirusSpawner {
     private static final int TIME_LEVEL_3 = 55;
 
     private final Handler handler;
-    private static int spawnRate = 1; // in viruses per second
+    private static int spawnRate = 1;
+    private static final int BOSS_SPAWN_TIME = 30;
 
     private final long begin;
     private long lastSpawnTime;
@@ -24,6 +25,9 @@ public class VirusSpawner {
 
     private final GenerateSpike gen1;
     private final GenerateBacteria gen2;
+
+    //flag per il boss finale
+    private boolean bossSpawned = false;
 
     /**
      * Inizialize virus creation factories.
@@ -53,16 +57,19 @@ public class VirusSpawner {
         }
 
         if (elapsedTime >= 1000 / spawnRate) {
-            final Virus x = generateViruses();
+            final Virus x = gen1.createVirus(this.handler);
             handler.addObject(x);
             lastSpawnTime = currentTime;
 
-            generateFixedPositionViruses();
+            //generateFixedPositionViruses();
         }
 
-        if (diff() > TIME_LEVEL_3) {
-            spawnRate = 2;
-            flood();
+        if (!bossSpawned && diff() >= BOSS_SPAWN_TIME) {
+            final Virus boss = gen2.createVirus(this.handler);
+            boss.setIsBig(true);
+            handler.addObject(boss);
+            bossSpawned = true;
+
         }
     }
 
@@ -114,6 +121,12 @@ public class VirusSpawner {
                     v.setIsBig(true);
                     handler.addObject(v);
                 });
+    }
+
+    private void spawnBoss() {
+        final Virus boss = gen2.createVirus(this.handler);
+        boss.setIsBig(true); // HP x2, dimensione maggiore
+        handler.addObject(boss);
     }
 
     /**
