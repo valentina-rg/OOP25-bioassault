@@ -34,14 +34,15 @@ public class Game extends Canvas implements Runnable {
 
 
     public Game() {
-        new Window(WINDOW_WIDTH, WINDOW_HEIGHT, "BioAssault", this);
-        start();
-
-
+        this.setPreferredSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
+        this.setMinimumSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
+        this.setMaximumSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
 
         handler = new Handler();
         camera = new Camera(0, 0);
-        this.addKeyListener(new KeyInput(handler));
+
+
+
 
         BufferedImageLoader loader = new BufferedImageLoader();
         level = loader.loadImage("/background/level2.png");
@@ -49,6 +50,14 @@ public class Game extends Canvas implements Runnable {
 
         handler.addObject(new Player(100, 100, ID.Player, handler));
         spawner = new VirusSpawner(handler);
+
+        new Window(WINDOW_WIDTH, WINDOW_HEIGHT, "BioAssault", this);
+
+
+        this.addKeyListener(new KeyInput(handler));
+
+        start();
+
 
     }
 
@@ -132,13 +141,13 @@ public class Game extends Canvas implements Runnable {
         g2d.translate(-camera.getX(), -camera.getY());
 
         if (level != null) {
-            g.drawImage(level, 0, 0, null);
+            g2d.drawImage(level, 0, 0, Game.WORLD_WIDTH, Game.WORLD_HEIGHT, null);
         } else {
-            g.setColor(Color.darkGray);
-            g.fillRect(0, 0, Game.WORLD_WIDTH, Game.WORLD_HEIGHT);
+            g2d.setColor(Color.darkGray);
+            g2d.fillRect(0, 0, Game.WORLD_WIDTH, Game.WORLD_HEIGHT);
         }
 
-        handler.render(g);
+        handler.render(g2d);
 
         // DISATTIVA LA CAMERA
         g2d.translate(camera.getX(), camera.getY());

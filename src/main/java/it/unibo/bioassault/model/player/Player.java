@@ -1,5 +1,6 @@
 package it.unibo.bioassault.model.player;
 
+import it.unibo.bioassault.model.Game;
 import it.unibo.bioassault.model.combat.Projectile;
 import it.unibo.bioassault.model.GameObject;
 import it.unibo.bioassault.model.Handler;
@@ -48,6 +49,8 @@ public class Player extends GameObject {
 
         x += velX;
         y += velY;
+        x = Math.max(0, Math.min(x, Game.WORLD_WIDTH - 32));   // 32 = larghezza player
+        y = Math.max(0, Math.min(y, Game.WORLD_HEIGHT - 48));  // 48 = altezza player
 
         if (velX != 0 || velY != 0) {
             hasStartedMoving = true;
