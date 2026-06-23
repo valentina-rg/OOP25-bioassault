@@ -1,9 +1,10 @@
 package it.unibo.bioassault.model.player;
 
-
+import it.unibo.bioassault.model.combat.Projectile;
 import it.unibo.bioassault.model.GameObject;
 import it.unibo.bioassault.model.Handler;
 import it.unibo.bioassault.model.ID;
+import it.unibo.bioassault.model.viruses.Virus;
 
 import java.awt.*;
 
@@ -11,6 +12,8 @@ import java.awt.*;
 public class Player extends GameObject {
 
     Handler handler;
+    private int hp = 100; // Punti vita iniziali della cellula
+    private int shootCooldown = 0; // Tempo di attesa tra uno sparo e l'altro
 
     public Player(int x, int y, ID id, Handler handler) {
         super(x, y, id);
@@ -48,6 +51,26 @@ public class Player extends GameObject {
 
         if (velX != 0 || velY != 0) {
             hasStartedMoving = true;
+
+        }
+        
+
+        // Collisione player-virus
+        for (GameObject obj : handler.object) { // Scorre tutti gli oggetti del gioco
+            if (obj instanceof Virus) { // Controlla solo i virus
+                if (this.getBounds().intersects(obj.getBounds())) { // Se le hitbox si sovrappongono
+                this.takeDamage(1); // Il player perde 1 HP
+                }
+            }
+        }
+
+        if (this.shootCooldown > 0) { // Se il cooldown è attivo
+            this.shootCooldown--; // Diminuisce il cooldown
+        }
+
+        if (this.shootCooldown == 0) { // Se il player può sparare
+            handler.addObject(new Projectile((int) this.x + 32, (int) this.y + 20, handler, 8, 0, 10, id)); // Spara un proiettile verso destra
+            this.shootCooldown = 30; // Imposta il cooldown dello sparo
         }
     }
 
@@ -64,5 +87,30 @@ public class Player extends GameObject {
 
     public Rectangle getBounds() {
         return new Rectangle((int) x, (int)y, 32, 48);
+    }
+
+    // Applica un danno alla cellula
+    public void takeDamage(final int damage) {
+
+        if (damage < 0) { // Il danno non può essere negativo
+         throw new IllegalArgumentException(
+               "Il danno non può essere negativo"
+         );
+        }
+
+     this.hp = Math.max(
+            0,                  // HP minimi consentiti
+            this.hp - damage    // HP dopo il danno
+        );
+    }
+
+    // Restituisce gli HP correnti della cellula
+    public int getHp() {
+        return this.hp; // Restituisce gli HP attuali
+    }
+
+    // Verifica se la cellula è morta
+    public boolean isDead() {
+      return this.hp <= 0; // Morta se gli HP sono pari a zero
     }
 }

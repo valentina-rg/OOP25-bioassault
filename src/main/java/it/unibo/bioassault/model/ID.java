@@ -3,6 +3,6 @@ package it.unibo.bioassault.model;
 public enum ID {
     Player(),
     //Block(),
-    Enemy();
-
+    Enemy(),
+    Projectile();
 }
