@@ -12,7 +12,7 @@ import java.util.Map;
  */
 
 public class RunStats{
-    private static final float SECOND_TO_MINUTES = 60.0;    
+    private static final float SECOND_TO_MINUTES = 60;    
     private static final long KILLS_MULTIPLIER = 10L;
     private static final float DAMAGE_MULTIPLIER = 0.5f;
     private static final int SURVIVING_BONUS = 2;
@@ -29,11 +29,13 @@ public class RunStats{
     private int goldCollected= 0;
     private float damageDealt  = 0;
     private float damageTaken  = 0;
-    private int healsUsed    = 0;
+    private int healUsed    = 0;
     private boolean survived     = false;
 
     private final Map<String, Integer> killsByType = new HashMap<>();
 
+    
+    
     /**
      * Records an individual enemy kill, classifying it by identity group and difficulty rank.
      * * @param enemyType The string identifier representing the species or type of enemy killed.

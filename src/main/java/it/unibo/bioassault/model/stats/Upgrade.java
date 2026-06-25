@@ -94,10 +94,6 @@ public class Upgrade {
         return name + stack + "  –  " + description;
     }
 
-    // ─────────────────────────────────────────
-    //  UPGRADE PREDEFINITI (esempi d'uso)
-    // ─────────────────────────────────────────
-
     /**
      * A collection of ready-to-use preconfigured upgrades utilizing the 
      * getter and setter patterns of {@link PlayerStats}.
@@ -115,7 +111,7 @@ public class Upgrade {
             return Upgrade.stackable(
                 "Velocità +",
                 "Aumenta la velocità di movimento del 10%",
-                stats -> stats.setSpeed(stats.getSpeed() * 1.10f),
+                stats -> stats.setMoveSpeed(stats. getMoveSpeed() * 1.10f),
                 3
             );
         }
@@ -141,7 +137,7 @@ public class Upgrade {
             return Upgrade.stackable(
                 "Danno +",
                 "Aumenta il danno base del 15%",
-                stats -> stats.setDamage((int) (stats.getDamage() * 1.15f)),
+                stats -> stats.setDamageMult((int) (stats.getDamageMult() * 1.15f)),
                 5
             );
         }

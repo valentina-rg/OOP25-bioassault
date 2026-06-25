@@ -14,6 +14,7 @@ public class ExperienceSystem {
     private static final int UPGRADE_CHOICES = 3;
     private static final double XP_BASE = 100.0;
     private static final int STARTING_LEVEL = 1;
+    private static final double XP_EXPONENT = 1.5;
 
     private int level = STARTING_LEVEL;
     private double currentXP = 0;
@@ -21,8 +22,8 @@ public class ExperienceSystem {
 
     private final PlayerStats stats;
     private final List<Upgrade> upgradePool = new ArrayList<>();
-    private final list<Upgrade> acquiredUpgrade = new ArrayList<>();
-    private final list<LevelUpListener> listeners = new ArrayList<>();
+    private final List<Upgrade> acquiredUpgrades = new ArrayList<>();
+    private final List<LevelUpListener> listeners = new ArrayList<>();
 
     /**
      * Constructs a new ExperienceSystem bound to a specific character's stats.
@@ -32,6 +33,13 @@ public class ExperienceSystem {
         this.stats = stats;
         this.xpToNextLevel = computeXpRequired(level);
         registerDefaultUpgrades();
+    }
+
+    private void registerDefaultUpgrades() {
+        registerUpgrade(Upgrade.Preset.speedBoost());
+        registerUpgrade(Upgrade.Preset.maxHpUp());
+        registerUpgrade(Upgrade.Preset.damageUp());
+        registerUpgrade(Upgrade.Preset.healOnPickup());
     }
 
     /**
@@ -64,7 +72,7 @@ public class ExperienceSystem {
      */
     public void applyUpgrade(Upgrade upgrade) {
         upgrade.apply(stats);
-        acquiredUpgrade.add(upgrade);
+        acquiredUpgrades.add(upgrade);
         upgradePool.remove(upgrade);
     }
 
@@ -129,9 +137,9 @@ public class ExperienceSystem {
      * Handles the execution state logic triggered exactly at milestone thresholds. 
      * Assembles a snapshot of unique perks and distributes updates to active observers.
      */
-    private void onLevelUP() {
+    private void onLevelUp() {
         List<Upgrade> choices = pickRandomUpgrades(UPGRADE_CHOICES);
-        listeners.forEach(l -> l.onLevelUP(level, choices));
+        listeners.forEach(l -> l.onLevelUp(level, choices));
     }
 
     /**
