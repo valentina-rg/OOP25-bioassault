@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Manages the character experience tracking, progression curve, level thresholds, 
- * and handles the generation of randomized perk options using an event-driven listener pattern.
+ * Manages the character experience tracking
  */
-
 public class ExperienceSystem {
     
     private static final int MAX_LEVEL = 100;
@@ -27,7 +25,6 @@ public class ExperienceSystem {
 
     /**
      * Constructs a new ExperienceSystem bound to a specific character's stats.
-     * @param stats The core stats model instance that will receive applied upgrades.
      */
     public ExperienceSystem(PlayerStats stats) {
         this.stats = stats;
@@ -43,10 +40,9 @@ public class ExperienceSystem {
     }
 
     /**
-     * Adds experience points to the system. Handles multi-level progression loops 
-     * if the amount received overflows past multiple sequential thresholds.
+     * Adds experience points to the system.
      *
-     * @param amount Quantified experience points earned by actions.
+     * @param amount is the amount of experience points earned by actions.
      */
 
     public void addXp(double amount) {
@@ -64,11 +60,10 @@ public class ExperienceSystem {
         }
     }
 
-    /**
-     * Confirms, processes, and stores an upgrade choice, permanently altering player stats.
+    /**.
      * Removes the chosen upgrade from the active pool if it cannot stack further.
      *
-     * @param upgrade The selected {@link Upgrade} instance to inject.
+     * @param upgrade are the selected upgrades.
      */
     public void applyUpgrade(Upgrade upgrade) {
         upgrade.apply(stats);
@@ -77,18 +72,14 @@ public class ExperienceSystem {
     }
 
     /**
-     * Adds an upgrade blueprint into the active pool available for selection upon leveling up.
-     *
-     * @param upgrade The {@link Upgrade} blueprint template.
+     * Adds an upgrade into the pool available for selection upon leveling up.
      */
     public void registerUpgrade(Upgrade upgrade) {
         upgradePool.add(upgrade);
     }
 
     /**
-     * Subscribes an external component to listen for leveling progression events.
-     *
-     * @param listener Callback observer instance matching {@link LevelUpListener}.
+     * Attach an external component to listen for leveling up events.
      */
     public void addLevelUpListener(LevelUpListener listener) {
         listeners.add(listener);
@@ -106,22 +97,22 @@ public class ExperienceSystem {
         return currentXP; 
     }
 
-    /** @return Total raw experience points threshold required to unlock the next progression tier. */
+    /** @return Total raw experience points threshold required to unlock the next level. */
     public double getXpToNextLevel() { 
         return xpToNextLevel; 
     }
 
-    /** @return Normalized scale progress percentage value mapping inside range (0.0 - 1.0). */
+    /** @return  progress percentage value*/
     public double getXpProgress() { 
         return currentXP / xpToNextLevel; 
     }
 
-    /** @return Attached player statistics container. */
+    /** @return player statistics. */
     public PlayerStats getStats() { 
         return stats; 
     }
 
-    /** @return An unmodifiable snapshot view containing historical acquired upgrades. */
+    /** @return An unmodifiable view containing acquired upgrades. */
     public List<Upgrade> getAcquired() { 
         return List.copyOf(acquiredUpgrades); 
     }
@@ -134,8 +125,7 @@ public class ExperienceSystem {
     }
 
     /**
-     * Handles the execution state logic triggered exactly at milestone thresholds. 
-     * Assembles a snapshot of unique perks and distributes updates to active observers.
+     * Handles the execution logic triggered on level up
      */
     private void onLevelUp() {
         List<Upgrade> choices = pickRandomUpgrades(UPGRADE_CHOICES);
@@ -143,8 +133,8 @@ public class ExperienceSystem {
     }
 
     /**
-     * Randomly extracts a specific quantity of available blueprints from the upgrade pool 
-     * without duplicating options in the same set.
+     * Randomly extracts a specific quantity of available upgrades from the upgrade pool 
+     * without duplicating options
      */
     private List<Upgrade> pickRandomUpgrades(int count) {
         List<Upgrade> available = new ArrayList<> (upgradePool);
@@ -158,15 +148,10 @@ public class ExperienceSystem {
     }
 
     /**
-     * Functional callback blueprint defining interface listeners listening for level up increments.
+     * Functional interface for listening to level up increments. 
+     * Triggered immediately when a level benchmark has been cleared.
      */
     public interface LevelUpListener {
-        /**
-         * Triggered immediately when a level benchmark has been cleared.
-         *
-         * @param newLevel       The absolute integer index value of the newly achieved level tier.
-         * @param upgradeChoices A customized selection array of random card upgrades proposed.
-         */
         void onLevelUp(int newLevel, List<Upgrade> upgradeChoices);
     }
 }

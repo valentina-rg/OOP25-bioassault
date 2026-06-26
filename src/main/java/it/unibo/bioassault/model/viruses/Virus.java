@@ -5,6 +5,7 @@ import it.unibo.bioassault.model.GameObject;
 import it.unibo.bioassault.model.Handler;
 import it.unibo.bioassault.model.ID;
 import it.unibo.bioassault.model.player.Player;
+import  main.java.it.unibo.bioassault.model.stats.RunStats;
 
 import java.util.Random;
 
@@ -147,8 +148,8 @@ public abstract class Virus extends GameObject {
 
     public kills(){
         if (VirusCombatUtils.isDead(this)) {
-            stats.recordKill(this.isBig(), false);
-    handler.removeObject(this);
-}
+            stats.recordKill(this.getClass().getSimpleName(), this.isBig(), false);
+            handler.removeObject(this);
+        }
     }
 }
