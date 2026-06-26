@@ -21,6 +21,8 @@ public abstract class Virus extends GameObject {
     protected float speed;
     protected int choose = 0;
 
+    private boolean isBig;
+
     public Virus(int x, int y, ID id, Handler handler, int hp, float speed) {
         super(x, y, id);
         this.handler = handler;
@@ -136,7 +138,17 @@ public abstract class Virus extends GameObject {
         if (isBig) {
             this.hp *= 2;
         }
+        this.isBig = isBig;
     }
 
+    public boolean isBig() {
+        return isBig;
+    }
 
+    public kills(){
+        if (VirusCombatUtils.isDead(this)) {
+            stats.recordKill(this.isBig(), false);
+    handler.removeObject(this);
+}
+    }
 }

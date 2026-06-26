@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import it.unibo.bioassault.model.viruses.Virus;
 
 /**
  * Tracks, measures, and encapsulates all player performance metrics throughout a single gameplay session.
@@ -42,7 +43,7 @@ public class RunStats{
      * @param elite     True if the killed target was classified as an elite variant.
      * @param boss      True if the killed target was classified as a boss entity.
      */
-    public void recordKill () {
+    public void recordKill (final boolean elite, final boolean boss) {
         kills++;
         killsByType.merge(enemyType, 1, Integer::sum);
         
