@@ -1,7 +1,7 @@
 package it.unibo.bioassault.model;
 
 import it.unibo.bioassault.BufferedImageLoader;
-import it.unibo.bioassault.control.KeyInput;
+import it.unibo.bioassault.controller.KeyInput;
 import it.unibo.bioassault.model.player.Player;
 import it.unibo.bioassault.model.viruses.VirusSpawner;
 import it.unibo.bioassault.view.Camera;
@@ -115,7 +115,7 @@ public class Game extends Canvas implements Runnable {
 
         for (GameObject obj : handler.object) {
             if (obj.getId() == ID.Player) {
-                camera.tick(obj);
+                camera.update(obj);
                 break;
             }
         }
