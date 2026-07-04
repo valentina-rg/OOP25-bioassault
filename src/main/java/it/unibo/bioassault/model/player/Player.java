@@ -6,6 +6,8 @@ import it.unibo.bioassault.model.GameObject;
 import it.unibo.bioassault.model.Handler;
 import it.unibo.bioassault.model.ID;
 import it.unibo.bioassault.model.viruses.Virus;
+import it.unibo.bioassault.model.combat.weapons.AntibodyWeapon;
+import it.unibo.bioassault.model.combat.weapons.Weapon;
 
 import java.awt.*;
 
@@ -15,9 +17,10 @@ public class Player extends GameObject {
     Handler handler;
     private int hp = 100; // Punti vita iniziali della cellula
     private int shootCooldown = 0; // Tempo di attesa tra uno sparo e l'altro
+    private final AntibodyWeapon weapon = new AntibodyWeapon(); // Arma usata dal player
 
     public Player(int x, int y, ID id, Handler handler) {
-        super(x, y, id);
+        super(x, y, id);      
         this.handler = handler;
     }
 
@@ -72,7 +75,17 @@ public class Player extends GameObject {
         }
 
         if (this.shootCooldown == 0) { // Se il player può sparare
-            handler.addObject(new Projectile((int) this.x + 32, (int) this.y + 20, handler, 8, 0, 10, id)); // Spara un proiettile verso destra
+           handler.addObject(
+        new Projectile(
+                (int) this.x + 32,
+                (int) this.y + 20,
+                handler,
+                this.weapon.getProjectileSpeed(),
+                0,
+                this.weapon.getDamage(),
+                ID.Projectile
+        )
+);
             this.shootCooldown = 30; // Imposta il cooldown dello sparo
         }
     }
