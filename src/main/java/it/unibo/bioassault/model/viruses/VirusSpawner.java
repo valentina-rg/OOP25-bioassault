@@ -1,68 +1,66 @@
 package it.unibo.bioassault.model.viruses;
 
-import java.util.stream.Stream;
 import it.unibo.bioassault.model.Handler;
 
+import java.util.Random;
 
-
-/**
- * Class to manage spawn of viruses.
- */
 public class VirusSpawner {
 
-    private static final int TIME_LEVEL_1 = 20;
-    private static final int TIME_LEVEL_2 = 40;
-    private static final int TIME_LEVEL_3 = 55;
+    private static final int TIME_LEVEL_1 = 20; // fino a 20s: solo Spike, spawn dolce
+    private static final int BOSS_TIME = 55;    // al secondo 55: spawn boss (una tantum)
+
+    private static final int SPAWN_RATE_SLOW = 1;      // virus al secondo, fase 1 (solo Spike)
+    private static final int SPAWN_RATE_MIN_PHASE2 = 2; // virus al secondo, inizio fase 2
+    private static final int SPAWN_RATE_MAX_PHASE2 = 5; // virus al secondo, picco fase 2 (appena prima del boss)
+    private static final int RAMP_UP_STEP_SECONDS = 7;  // ogni quanti secondi sale di 1 in fase 2
 
     private final Handler handler;
-    private static int spawnRate = 1; // in viruses per second
+    private int spawnRate = SPAWN_RATE_SLOW;
 
     private final long begin;
     private long lastSpawnTime;
     private int currentSecond;
     private long currentTime;
 
+    private boolean bossSpawned = false;
+
     private final GenerateSpike gen1;
     private final GenerateBacteria gen2;
+    private final GenerateBoss genBoss;
+    private final Random random = new Random();
 
-    /**
-     * Inizialize virus creation factories.
-     * * @param h handler
-     */
     public VirusSpawner(final Handler h) {
         this.handler = h;
         this.gen1 = new GenerateSpike();
         this.gen2 = new GenerateBacteria();
+        this.genBoss = new GenerateBoss();
         this.begin = System.currentTimeMillis() / 1000;
     }
 
-    /**
-     * Spawn viruses all around the player
-     * Creation is time based.
-     */
     public void spawnViruses() {
         long elapsedTime;
 
         currentTime = System.currentTimeMillis();
-        currentSecond = (int) ((currentTime / 1000)); // update current second
+        currentSecond = (int) (currentTime / 1000);
 
         elapsedTime = currentTime - lastSpawnTime;
 
-        if (diff() > TIME_LEVEL_1) {
-            spawnRate = 1;
+        // Il boss è comparso: lo spawn normale si ferma definitivamente
+        if (bossSpawned) {
+            return;
         }
+
+        updateSpawnRate();
 
         if (elapsedTime >= 1000 / spawnRate) {
             final Virus x = generateViruses();
             handler.addObject(x);
             lastSpawnTime = currentTime;
-
-            generateFixedPositionViruses();
         }
 
-        if (diff() > TIME_LEVEL_3) {
-            spawnRate = 2;
-            flood();
+        if (diff() >= BOSS_TIME) {
+            spawnBoss();
+            bossSpawned = true;
         }
     }
 
@@ -71,54 +69,52 @@ public class VirusSpawner {
     }
 
     /**
-     * create different type of viruses based on time.
-     * * @return virus.
+     * Calcola il ritmo di spawn corrente in base al tempo trascorso.
+     * Fase 1 (0-20s): ritmo fisso e dolce, solo Spike.
+     * Fase 2 (20s-55s): il ritmo cresce gradualmente ogni RAMP_UP_STEP_SECONDS,
+     * fino a un massimo di SPAWN_RATE_MAX_PHASE2, per un'aggressività crescente.
      */
-    private Virus generateViruses() {
+    private void updateSpawnRate() {
+        final int elapsed = diff();
 
-        currentSecond = (int) ((currentTime / 1000)); // update current second
-        Virus v;
-
-        if ((diff()) < TIME_LEVEL_1) {
-            v = gen1.createVirus(this.handler);
-        } else if (diff() == TIME_LEVEL_1) {
-            v = gen1.createVirus(this.handler);
-            v.setIsBig(true);
-        } else if (diff() < TIME_LEVEL_2) {
-            v = gen2.createVirus(this.handler);
-        } else if (diff() == TIME_LEVEL_2) {
-            v = gen2.createVirus(this.handler);
-            v.setIsBig(true);
-        } else {
-            v = gen2.createVirus(this.handler);
+        if (elapsed < TIME_LEVEL_1) {
+            spawnRate = SPAWN_RATE_SLOW;
+            return;
         }
 
-        return v;
+        final int secondsIntoPhase2 = elapsed - TIME_LEVEL_1;
+        final int increments = secondsIntoPhase2 / RAMP_UP_STEP_SECONDS;
+
+        spawnRate = Math.min(
+                SPAWN_RATE_MIN_PHASE2 + increments,
+                SPAWN_RATE_MAX_PHASE2
+        );
     }
 
     /**
-     * viruses created all through the game.
+     * Fase 1 (0-20s): solo Spike.
+     * Fase 2 (20s+): Spike e Bacteria insieme, scelti a caso 50/50.
+     *
+     * @return virus.
      */
-    private void generateFixedPositionViruses() {
-        final Virus rh = gen1.createVirus(this.handler);
-        handler.addObject(rh);
+    private Virus generateViruses() {
+        if (diff() < TIME_LEVEL_1) {
+            return gen1.createVirus(this.handler);
+        }
+
+        return random.nextBoolean()
+                ? gen1.createVirus(this.handler)
+                : gen2.createVirus(this.handler);
     }
 
     /**
-     * massive flood of viruses.
+     * Spawna il boss finale
      */
-    private void flood() {
-        Stream.generate(() -> gen2.createVirus(this.handler))
-                .limit(1)
-                .forEach(v -> {
-                    v.setIsBig(true);
-                    handler.addObject(v);
-                });
+    private void spawnBoss() {
+        final Virus boss = genBoss.createVirus(this.handler);
+        handler.addObject(boss);
     }
 
-    /**
-     * @return time in seconds from the begin of game
-     */
     final int diff() {
         return (int) (currentSecond - this.begin);
     }
