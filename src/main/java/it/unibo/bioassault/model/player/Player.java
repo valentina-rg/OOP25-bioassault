@@ -1,14 +1,12 @@
 package it.unibo.bioassault.model.player;
 
 import it.unibo.bioassault.model.Game;
-import it.unibo.bioassault.model.combat.Projectile;
 import it.unibo.bioassault.model.GameObject;
 import it.unibo.bioassault.model.Handler;
 import it.unibo.bioassault.model.ID;
 import it.unibo.bioassault.model.viruses.Virus;
+import it.unibo.bioassault.model.combat.Projectile;
 import it.unibo.bioassault.model.combat.weapons.AntibodyWeapon;
-import it.unibo.bioassault.model.combat.weapons.Weapon;
-
 
 import java.awt.*;
 
