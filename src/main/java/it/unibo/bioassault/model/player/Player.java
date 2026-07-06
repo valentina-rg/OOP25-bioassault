@@ -59,17 +59,17 @@ public class Player extends GameObject {
         if (velX != 0 || velY != 0) {
             hasStartedMoving = true;
             if (velX > 0) {
-                lastDirX = 1;
+                lastDirX = -1;
                 lastDirY = 0;
             }  else if (velX < 0) {
-                lastDirX = -1;
+                lastDirX = 1;
                 lastDirY = 0;
             }  else if (velY > 0) {
                 lastDirX = 0;
-                lastDirY = 1;
+                lastDirY = -1;
             }  else if (velY < 0) {
                 lastDirX = 0;
-                lastDirY = -1;
+                lastDirY = 1;
             }
         }
         
