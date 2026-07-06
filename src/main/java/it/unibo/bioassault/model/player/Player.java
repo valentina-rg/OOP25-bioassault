@@ -9,6 +9,7 @@ import it.unibo.bioassault.model.viruses.Virus;
 import it.unibo.bioassault.model.combat.weapons.AntibodyWeapon;
 import it.unibo.bioassault.model.combat.weapons.Weapon;
 
+
 import java.awt.*;
 
 //ATTENZIONE: player di prova per verificare lo spawn dei nemici. codice base da migliorare e da espandere
@@ -18,6 +19,8 @@ public class Player extends GameObject {
     private int hp = 100; // Punti vita iniziali della cellula
     private int shootCooldown = 0; // Tempo di attesa tra uno sparo e l'altro
     private final AntibodyWeapon weapon = new AntibodyWeapon(); // Arma usata dal player
+    private float lastDirX = 1; //ultima direzione del player
+    private float lastDirY = 0; //ultima direzione del player
 
     public Player(int x, int y, ID id, Handler handler) {
         super(x, y, id);      
@@ -57,10 +60,21 @@ public class Player extends GameObject {
 
         if (velX != 0 || velY != 0) {
             hasStartedMoving = true;
-
+            if (velX > 0) {
+                lastDirX = 1;
+                lastDirY = 0;
+            }  else if (velX < 0) {
+                lastDirX = -1;
+                lastDirY = 0;
+            }  else if (velY > 0) {
+                lastDirX = 0;
+                lastDirY = 1;
+            }  else if (velY < 0) {
+                lastDirX = 0;
+                lastDirY = -1;
+            }
         }
         
-
         // Collisione player-virus
         for (GameObject obj : handler.object) { // Scorre tutti gli oggetti del gioco
             if (obj instanceof Virus) { // Controlla solo i virus
@@ -80,8 +94,8 @@ public class Player extends GameObject {
                 (int) this.x + 32,
                 (int) this.y + 20,
                 handler,
-                this.weapon.getProjectileSpeed(),
-                0,
+                this.lastDirX * this.weapon.getProjectileSpeed(),
+                this.lastDirY * this.weapon.getProjectileSpeed(),
                 this.weapon.getDamage(),
                 ID.Projectile
         )
