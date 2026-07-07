@@ -1,7 +1,5 @@
 package it.unibo.bioassault.view;
-
 import it.unibo.bioassault.model.UpgradeOption;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -10,23 +8,23 @@ import java.util.function.IntConsumer;
 
 /**
  * Raccoglie tutte le schermate overlay del gioco come inner class statiche:
- *
  *   - MainMenuScreen  → menu principale con animazione sfondo
  *   - PauseScreen     → overlay di pausa con bottoni Riprendi / Menu
  *   - LevelUpScreen   → scelta tra 3 upgrade al salire di livello
  *   - GameOverScreen  → statistiche finali con opzione Rigioca / Menu
- *
  * Ogni schermata e' un JPanel autonomo.
  * Si aggiungono/rimuovono al JLayeredPane di GameWindow tramite
  * showOverlay() e removeCurrentOverlay().
  */
 public class GameScreens {
 
-    // ================================================================== //
-    //  MENU PRINCIPALE
-    // ================================================================== //
+    // Overlay che possiede risorse (timer) da rilasciare alla rimozione.
+    public interface DisposableOverlay {
+        void dispose();
+    }
 
-    public static class MainMenuScreen extends JPanel {
+    //  MENU PRINCIPALE
+    public static class MainMenuScreen extends JPanel implements DisposableOverlay {
 
         private final Runnable onStart;
         private final Runnable onQuit;
@@ -70,11 +68,12 @@ public class GameScreens {
             final Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-            final int  W = getWidth(), H = getHeight();
+            final int width = getWidth();
+            final int height = getHeight();
             final long t = System.currentTimeMillis() - startTime;
 
             // Sfondo: virus che galleggiano lentamente
-            drawFloatingViruses(g2, W, H, t);
+            drawFloatingViruses(g2, width, height, t);
 
             // Titolo: "BIO ASSAULT" in due righe
             final Font titleFont = new Font("Monospaced", Font.BOLD, 52);
@@ -86,29 +85,29 @@ public class GameScreens {
             // Il verde pulsa leggermente nel tempo
             final float pulse = 0.85f + 0.15f * (float) Math.sin(t / 800.0);
             g2.setColor(new Color(0.21f * pulse, 0.93f * pulse, 0.44f * pulse, 1f));
-            g2.drawString(title1, (W - fm.stringWidth(title1)) / 2, H / 2 - 80);
+            g2.drawString(title1, (width - fm.stringWidth(title1)) / 2, height / 2 - 80);
 
             g2.setColor(new Color(0xdfe6e9));
-            g2.drawString(title2, (W - fm.stringWidth(title2)) / 2, H / 2 - 22);
+            g2.drawString(title2, (width - fm.stringWidth(title2)) / 2, height / 2 - 22);
 
             // Sottotitolo fisso
             g2.setFont(new Font("Monospaced", Font.PLAIN, 14));
             g2.setColor(new Color(0x636e72));
             final String sub = "La cellula deve sopravvivere all'invasione dei virus";
             final FontMetrics fmS = g2.getFontMetrics();
-            g2.drawString(sub, (W - fmS.stringWidth(sub)) / 2, H / 2 + 24);
+            g2.drawString(sub, (width - fmS.stringWidth(sub)) / 2, height / 2 + 24);
 
             g2.dispose();
         }
 
-        /** Disegna virus semitrasparenti che si muovono lentamente sullo sfondo. */
+        // Disegna virus semitrasparenti che si muovono lentamente sullo sfondo.
         private void drawFloatingViruses(final Graphics2D g2,
-                                         final int W, final int H, final long t) {
+                                         final int width, final int height, final long t) {
             final int count = 18;
             for (int i = 0; i < count; i++) {
                 final double phase = (double) i / count;
-                final float x = (float)((Math.sin(phase * 12.7 + t / 4000.0) * 0.4 + 0.5) * W);
-                final float y = (float)((Math.cos(phase * 9.3  + t / 5500.0) * 0.4 + 0.5) * H);
+                final float x = (float)((Math.sin(phase * 12.7 + t / 4000.0) * 0.4 + 0.5) * width);
+                final float y = (float)((Math.cos(phase * 9.3  + t / 5500.0) * 0.4 + 0.5) * height);
                 final float r = 6 + (float)(Math.sin(phase * 7) * 4);
                 final float alpha = 0.08f + 0.06f * (float) Math.sin(phase * 5 + t / 2000.0);
                 g2.setColor(new Color(0.18f, 0.8f, 0.44f, alpha));
@@ -116,16 +115,14 @@ public class GameScreens {
             }
         }
 
-        /** Da chiamare quando si esce dal menu per fermare il timer d'animazione. */
+        // Da chiamare quando si esce dal menu per fermare il timer d'animazione.
+        @Override
         public void dispose() {
             animTimer.stop();
         }
     }
 
-    // ================================================================== //
     //  SCHERMATA DI PAUSA
-    // ================================================================== //
-
     public static class PauseScreen extends JPanel {
 
         public PauseScreen(final Runnable onResume, final Runnable onQuitToMenu) {
@@ -179,11 +176,15 @@ public class GameScreens {
         }
     }
 
-    // ================================================================== //
     //  SCELTA UPGRADE AL LEVEL-UP
-    // ================================================================== //
 
     public static class LevelUpScreen extends JPanel {
+
+        /* Dimensioni delle card di upgrade (usate sia nel disegno
+           che nel calcolo dei click, per non duplicare i numeri) */
+        private static final int CARD_WIDTH  = 200;
+        private static final int CARD_HEIGHT = 180;
+        private static final int CARD_GAP    = 24;
 
         private final List<UpgradeOption> options;
         private final IntConsumer         onChoice; // riceve 0, 1 o 2 (indice della card)
@@ -218,34 +219,39 @@ public class GameScreens {
         @Override
         protected void paintComponent(final Graphics g) {
             super.paintComponent(g);
-            if (options == null || options.isEmpty()) return;
+            if (options == null || options.isEmpty()) {
+                return;
+            }
 
             final Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-            final int W = getWidth(), H = getHeight();
+            final int width = getWidth();
+            final int height = getHeight();
 
             // Overlay scuro
             g2.setColor(new Color(0, 0, 0, 180));
-            g2.fillRect(0, 0, W, H);
+            g2.fillRect(0, 0, width, height);
 
             // Titolo
             g2.setFont(new Font("Monospaced", Font.BOLD, 26));
             g2.setColor(new Color(0xa29bfe));
             final String title = "LIVELLO SUPERIORE! SCEGLI UN POTENZIAMENTO";
             final FontMetrics fm = g2.getFontMetrics();
-            g2.drawString(title, (W - fm.stringWidth(title)) / 2, H / 2 - 130);
+            g2.drawString(title, (width - fm.stringWidth(title)) / 2, height / 2 - 130);
 
             // Hint tasti
             g2.setFont(new Font("Monospaced", Font.PLAIN, 12));
             g2.setColor(new Color(0x636e72));
-            g2.drawString("Tasti 1, 2, 3 oppure click", (W - 190) / 2, H / 2 - 108);
+            g2.drawString("Tasti 1, 2, 3 oppure click", (width - 190) / 2, height / 2 - 108);
 
             // Le 3 card degli upgrade
-            final int cardW = 200, cardH = 180, gap = 24;
+            final int cardW = CARD_WIDTH;
+            final int cardH = CARD_HEIGHT;
+            final int gap = CARD_GAP;
             final int totalW = 3 * cardW + 2 * gap;
-            final int startX = (W - totalW) / 2;
-            final int cardY  = H / 2 - 80;
+            final int startX = (width - totalW) / 2;
+            final int cardY  = height / 2 - 80;
 
             for (int i = 0; i < Math.min(3, options.size()); i++) {
                 drawUpgradeCard(g2, options.get(i),
@@ -256,7 +262,7 @@ public class GameScreens {
             g2.dispose();
         }
 
-        /** Disegna una singola card di upgrade. */
+        //Disegna una singola card di upgrade.
         private void drawUpgradeCard(final Graphics2D g2, final UpgradeOption opt,
                                      final int x, final int y,
                                      final int w, final int h,
@@ -294,10 +300,13 @@ public class GameScreens {
 
         /** Restituisce l'indice (0-2) della card sotto il cursore, o -1 se fuori. */
         private int cardIndexAt(final int mx, final int my) {
-            final int W = getWidth(), H = getHeight();
-            final int cardW = 200, cardH = 180, gap = 24;
-            final int startX = (W - (3 * cardW + 2 * gap)) / 2;
-            final int cardY  = H / 2 - 80;
+            final int width = getWidth();
+            final int height = getHeight();
+            final int cardW = CARD_WIDTH;
+            final int cardH = CARD_HEIGHT;
+            final int gap = CARD_GAP;
+            final int startX = (width - (3 * cardW + 2 * gap)) / 2;
+            final int cardY  = height / 2 - 80;
             for (int i = 0; i < 3; i++) {
                 final int cx = startX + i * (cardW + gap);
                 if (mx >= cx && mx <= cx + cardW && my >= cardY && my <= cardY + cardH) {
@@ -331,16 +340,10 @@ public class GameScreens {
         }
     }
 
-    // ================================================================== //
     //  GAME OVER / STATISTICHE FINALI
-    // ================================================================== //
+    public static class GameOverScreen extends JPanel implements DisposableOverlay {
 
-    public static class GameOverScreen extends JPanel {
-
-        /**
-         * Statistiche di fine partita mostrate nella schermata.
-         * Uso un record (Java 16+) perche' e' immutabile e compatto.
-         */
+        // Statistiche di fine partita mostrate nella schermata.
         public record Stats(
             int survivalSeconds,
             int wave,
@@ -352,6 +355,9 @@ public class GameScreens {
 
         // Le statistiche da mostrare, salvate al momento della creazione
         private final Stats stats;
+
+        // Timer d'animazione, fermato da dispose() alla rimozione dell'overlay
+        private final Timer animTimer;
 
         public GameOverScreen(final Stats stats,
                               final Runnable onRestart,
@@ -379,26 +385,36 @@ public class GameScreens {
             });
 
             // Piccola animazione per mantenere il pannello "vivo"
-            new Timer(16, e -> repaint()).start();
+            animTimer = new Timer(16, e -> repaint());
+            animTimer.start();
+        }
+
+        /** Ferma il timer d'animazione quando l'overlay viene rimosso. */
+        @Override
+        public void dispose() {
+            animTimer.stop();
         }
 
         @Override
         protected void paintComponent(final Graphics g) {
             super.paintComponent(g);
-            if (stats == null) return;
+            if (stats == null) {
+                return;
+            }
 
             final Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-            final int W = getWidth(), H = getHeight();
+            final int width = getWidth();
+            final int height = getHeight();
 
             // Overlay scuro
             g2.setColor(new Color(0, 0, 0, 200));
-            g2.fillRect(0, 0, W, H);
+            g2.fillRect(0, 0, width, height);
 
             // Box centrale
             final int bw = 420, bh = 380;
-            final int bx = (W - bw) / 2, by = (H - bh) / 2;
+            final int bx = (width - bw) / 2, by = (height - bh) / 2;
             g2.setColor(new Color(10, 26, 14, 240)); // 0x0a1a0e alpha 240
             g2.fillRoundRect(bx, by, bw, bh, 16, 16);
 
@@ -437,7 +453,6 @@ public class GameScreens {
             final int rowH = 34, startY = by + 90;
             for (int i = 0; i < labels.length; i++) {
                 final int rowY = startY + i * rowH;
-                // Riga alternata leggermente piu' chiara
                 if (i % 2 == 0) {
                     g2.setColor(new Color(255, 255, 255, 8));
                     g2.fillRect(bx + 10, rowY - 18, bw - 20, rowH - 2);
@@ -448,8 +463,6 @@ public class GameScreens {
                 final FontMetrics fmV = g2.getFontMetrics();
                 g2.drawString(values[i], bx + bw - 24 - fmV.stringWidth(values[i]), rowY);
             }
-
-            // Separatore
             g2.setColor(new Color(0x2d3436));
             g2.setStroke(new BasicStroke(1f));
             g2.drawLine(bx + 20, by + 270, bx + bw - 20, by + 270);
@@ -463,10 +476,6 @@ public class GameScreens {
         }
     }
 
-    // ================================================================== //
-    //  Helper condiviso: bottone stilizzato
-    // ================================================================== //
-
     /**
      * Crea un bottone con sfondo arrotondato e hover interattivo.
      * Usato da tutte le schermate per avere uno stile uniforme.
@@ -478,7 +487,7 @@ public class GameScreens {
             protected void paintComponent(final Graphics g) {
                 final Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                // Cambia tonalita' al click e all'hover
+                //Cambia tonalita' al click e all'hover
                 final Color c = getModel().isPressed()  ? bg.darker().darker()
                               : getModel().isRollover() ? bg.brighter()
                               : bg;
