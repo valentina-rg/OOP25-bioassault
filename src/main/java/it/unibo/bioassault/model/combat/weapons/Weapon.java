@@ -5,19 +5,19 @@ package it.unibo.bioassault.model.combat.weapons;
  */
 public abstract class Weapon {
 
-    protected int damage; // Danno inflitto dall'arma
-    protected float projectileSpeed; // Velocità del proiettile sparato dall'arma
+    private final int damage; 
+    private final float projectileSpeed; 
 
-    public Weapon(final int damage, final float projectileSpeed) {
-        this.damage = damage; // Inizializza il danno dell'arma
-        this.projectileSpeed = projectileSpeed; // Inizializza la velocità del proiettile
+    protected Weapon(final int damage, final float projectileSpeed) {
+        this.damage = damage; 
+        this.projectileSpeed = projectileSpeed; 
     }
 
     public int getDamage() {
-        return this.damage; // Restituisce il danno corrente
+        return this.damage; 
     }
 
     public float getProjectileSpeed() {
-        return this.projectileSpeed; // Restituisce la velocità del proiettile
+        return this.projectileSpeed; 
     }
 }
