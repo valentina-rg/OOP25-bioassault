@@ -115,7 +115,7 @@ public class Game extends Canvas implements Runnable {
 
         for (GameObject obj : handler.object) {
             if (obj.getId() == ID.Player) {
-                camera.update(obj);
+                camera.tick(obj);
                 break;
             }
         }

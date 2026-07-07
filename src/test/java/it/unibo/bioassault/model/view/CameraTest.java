@@ -37,7 +37,7 @@ class CameraTest {
         Camera camera = new Camera(0, 0);
         GameObject player = new DummyGameObject(Game.WINDOW_WIDTH, Game.WINDOW_HEIGHT);
 
-        camera.update(player);
+        camera.tick(player);
 
         assertTrue(camera.getX() > 0);
         assertTrue(camera.getY() > 0);
@@ -48,7 +48,7 @@ class CameraTest {
         Camera camera = new Camera(0, 0);
         GameObject player = new DummyGameObject(0, 0);
 
-        camera.update(player);
+        camera.tick(player);
 
         assertEquals(0f, camera.getX(), 0.0001f);
         assertEquals(0f, camera.getY(), 0.0001f);
@@ -59,7 +59,7 @@ class CameraTest {
         Camera camera = new Camera(Game.WORLD_WIDTH, Game.WORLD_HEIGHT);
         GameObject player = new DummyGameObject(Game.WORLD_WIDTH, Game.WORLD_HEIGHT);
 
-        camera.update(player);
+        camera.tick(player);
 
         assertEquals(Game.WORLD_WIDTH - Game.WINDOW_WIDTH, camera.getX(), 0.0001f);
         assertEquals(Game.WORLD_HEIGHT - Game.WINDOW_HEIGHT, camera.getY(), 0.0001f);

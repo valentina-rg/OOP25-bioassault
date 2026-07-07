@@ -18,7 +18,7 @@ public class Camera {
         this.y = y;
     }
 
-    public void update(GameObject object) {
+    public void tick(GameObject object) {
 
         final float halfWidth = Game.WINDOW_WIDTH / 2f;
         final float halfHeight = Game.WINDOW_HEIGHT / 2f;
