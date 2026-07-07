@@ -1,26 +1,18 @@
 package it.unibo.bioassault.view;
-
-import it.unibo.bioassault.controller.InputHandler;
 import it.unibo.bioassault.model.GameSnapshot;
-
 import javax.swing.*;
 import java.awt.*;
 
 /**
  * Finestra principale del gioco (JFrame).
- *
  * Usa un JLayeredPane per sovrapporre i pannelli:
  *   DEFAULT_LAYER → ArenaPanel  (rendering del mondo di gioco)
  *   PALETTE_LAYER → HudPanel    (overlay HP/XP/timer, sempre visibile)
- *   MODAL_LAYER   → schermata attiva (menu / pausa / level-up / game-over)
- *
- * Il GameController tiene un riferimento a questa finestra e la aggiorna
- * chiamando updateGameState() a ogni frame, e showOverlay() per le schermate.
- *
- * NOTA DI INTEGRAZIONE: questa classe sostituisce Window.java e il Canvas
- * di Game.java. Per integrarla con il ciclo di gioco dei compagni,
- * il render di Game deve chiamare window.updateGameState(snapshot) invece
- * di disegnare direttamente su Graphics.
+ * MODAL_LAYER   → schermata attiva (menu / pausa / level-up / game-over)
+ * Il Game (model) la aggiorna chiamando updateGameState() a ogni frame,
+ * e showOverlay() / removeCurrentOverlay() per le schermate.
+ * L'input da tastiera NON e' gestito qui: il chiamante registra il proprio
+ * KeyListener (es. KeyInput) con window.addKeyListener(...).
  */
 public class GameWindow extends JFrame {
 
@@ -31,7 +23,6 @@ public class GameWindow extends JFrame {
     private final ArenaPanel   arenaPanel;
     private final HudPanel     hudPanel;
     private final JLayeredPane layers;
-    private final InputHandler inputHandler;
 
     // Overlay attualmente visibile (pausa, level-up, ecc.)
     private JPanel currentOverlay = null;
@@ -39,11 +30,7 @@ public class GameWindow extends JFrame {
     public GameWindow() {
         super("BioAssault");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setResizable(false);
-
-        // InputHandler gestisce la tastiera
-        inputHandler = new InputHandler();
 
         // JLayeredPane come contenitore principale
         layers = new JLayeredPane();
@@ -60,22 +47,15 @@ public class GameWindow extends JFrame {
         layers.add(hudPanel, JLayeredPane.PALETTE_LAYER);
 
         setContentPane(layers);
-
-        // Registro l'InputHandler sulla finestra per ricevere i tasti
-        addKeyListener(inputHandler);
         setFocusable(true);
 
         pack();
         setLocationRelativeTo(null); // centra la finestra sullo schermo
     }
 
-    // ------------------------------------------------------------------ //
-    //  API pubblica per il GameController
-    // ------------------------------------------------------------------ //
-
     /**
      * Aggiorna arena e HUD con il nuovo snapshot di gioco.
-     * Deve essere chiamato da SwingUtilities.invokeLater() nel game loop
+     * Deve essere chiamato tramite SwingUtilities.invokeLater() dal game loop
      * per rispettare il thread di Swing.
      */
     public void updateGameState(final GameSnapshot snap) {
@@ -96,9 +76,13 @@ public class GameWindow extends JFrame {
         layers.repaint();
     }
 
-    /** Rimuove l'overlay corrente (es. chiudendo la pausa). */
+    //Rimuove l'overlay corrente (es. chiudendo la pausa).
     public void removeCurrentOverlay() {
         if (currentOverlay != null) {
+            // Se l'overlay ha un timer/risorse, le rilascia prima di rimuoverlo
+            if (currentOverlay instanceof GameScreens.DisposableOverlay d) {
+                d.dispose();
+            }
             layers.remove(currentOverlay);
             currentOverlay = null;
             layers.revalidate();
@@ -106,9 +90,7 @@ public class GameWindow extends JFrame {
         }
     }
 
-    // ---- Getter per il GameController ---------------------------------
-
-    public InputHandler getInputHandler() { return inputHandler;  }
-    public ArenaPanel   getArenaPanel()   { return arenaPanel;    }
-    public HudPanel     getHudPanel()     { return hudPanel;      }
+    // ---- Getter ----
+    public ArenaPanel getArenaPanel() { return arenaPanel; }
+    public HudPanel   getHudPanel()   { return hudPanel;   }
 }
