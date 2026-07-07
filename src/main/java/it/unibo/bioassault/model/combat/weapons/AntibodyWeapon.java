@@ -1,8 +1,13 @@
 package it.unibo.bioassault.model.combat.weapons;
-
-public class AntibodyWeapon extends Weapon {
-
-    public AntibodyWeapon() {
-        super(10, 10.0f); // 10 danni, proiettile veloce
+/**
+ * Arma base del player.
+ * Produce proiettili veloci con danno moderato.
+ */
+    public class AntibodyWeapon extends Weapon {
+        /**
+        * Crea un'arma anticorpo.
+        */
+        public AntibodyWeapon() {
+          super(30, 10.0f); // 30 danni, proiettile veloce
+        }
     }
-}
