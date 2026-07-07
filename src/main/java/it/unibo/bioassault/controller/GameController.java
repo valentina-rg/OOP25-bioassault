@@ -1,5 +1,6 @@
 package it.unibo.bioassault.controller;
 
+import it.unibo.bioassault.model.viruses.types.Bacteria;
 import it.unibo.bioassault.model.EnemyData;
 import it.unibo.bioassault.model.EnemyType;
 import it.unibo.bioassault.model.GameObject;
@@ -221,14 +222,16 @@ public class GameController {
 
             } else if (obj instanceof Virus v) {
                 // Mappo la classe del virus sul tipo grafico della view.
-                // TODO: quando esistera' il virus veloce (Bacteria), aggiungere
-                //       il ramo: v instanceof Bacteria -> EnemyType.FAST
+                // I tipi futuri (es. boss -> ELITE) si aggiungono qui.
                 final EnemyType type =
                         (v instanceof SpikyVirus) ? EnemyType.BASIC
-                                                  : EnemyType.FAST;
+                      : (v instanceof Bacteria)   ? EnemyType.FAST
+                      : EnemyType.FAST;
 
+                // Il model usa l'angolo in alto a sinistra dei bounds 32x32;
+                // la view disegna centrato: converto al centro della hitbox.
                 // TODO: usare v.getMaxHp() quando il model lo esporra'.
-                enemies.add(new EnemyData(v.getX(), v.getY(),
+                enemies.add(new EnemyData(v.getX() + 16, v.getY() + 16,
                                           v.getHp(), Math.max(1, v.getHp()), type));
 
             } else if (obj instanceof Projectile pr) {
