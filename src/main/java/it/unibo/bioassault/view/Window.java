@@ -18,7 +18,7 @@ public class Window {
 
         frame.add(game);
         frame.setResizable(false);
-        frame.setDefaultCloseOperation(JFrame. EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         Insets insets = frame.getInsets();
         frame.setSize(width + insets.left + insets.right,
@@ -26,13 +26,6 @@ public class Window {
 
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-
-        /*
-        frame.setLocationRelativeTo(null); //avvio del gioco la finestra è al centro
-        frame.setVisible(true);
-
-         */
-
     }
 
 }
