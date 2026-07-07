@@ -30,6 +30,7 @@ out/
 
 # Package Files #
 *.jar
+!bioassault.jar
 *.war
 *.nar
 *.ear

@@ -10,7 +10,12 @@ repositories {
     mavenCentral()
 }
 
-// Configurazione per il punto P9: mainClass è dove parte il programma
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
 application {
     mainClass.set("it.unibo.bioassault.Main")
 }
@@ -25,14 +30,13 @@ tasks.test {
     useJUnitPlatform()
 }
 
-// Configurazione per il FAT-JAR (Punto P8/P9)
 tasks.jar {
+    archiveFileName.set("OOP25-bioassault-1.0-SNAPSHOT.jar")
     manifest {
         attributes["Main-Class"] = "it.unibo.bioassault.Main"
     }
-    // Include tutte le dipendenze in un unico file
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     from(configurations.runtimeClasspath.get().map {
         if (it.isDirectory) it else zipTree(it)
     })
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
