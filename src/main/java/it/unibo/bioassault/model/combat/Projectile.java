@@ -4,6 +4,7 @@ import it.unibo.bioassault.model.GameObject;
 import it.unibo.bioassault.model.Handler;
 import it.unibo.bioassault.model.ID;
 import it.unibo.bioassault.model.viruses.Virus;
+import it.unibo.bioassault.model.Game;
 
 import java.awt.*;
 import java.util.LinkedList;
@@ -22,10 +23,20 @@ public class Projectile extends GameObject {
         this.damage = damage;
     }
 
+    /**
+    * Aggiorna la posizione del proiettile e controlla le collisioni.
+    * Il proiettile viene rimosso quando colpisce un virus
+    * oppure quando esce dai limiti del mondo di gioco.
+     */
     @Override
     public void tick() {
         this.x += this.velX; // Sposta il proiettile sull'asse X
         this.y += this.velY; // Sposta il proiettile sull'asse Y
+
+        if (OutWorld()) {
+        handler.removeObject(this);
+        return;
+        }
 
         for (final GameObject obj : new LinkedList<>(handler.object)) { // Copia della lista per evitare problemi durante la rimozione
             if (obj instanceof Virus virus) { // Controlla solo i virus
@@ -37,7 +48,17 @@ public class Projectile extends GameObject {
             }
         }
     }
-
+    /**
+    * Verifica se il proiettile si trova fuori dal mondo di gioco.
+    *
+    * torna true se il proiettile è fuori dai limiti
+    */
+    private boolean OutWorld() {
+        return this.x < 0
+            || this.y < 0
+            || this.x > Game.WORLD_WIDTH
+            || this.y > Game.WORLD_HEIGHT;
+}
     @Override
     public void render(final Graphics g) {
         g.setColor(Color.GREEN);
