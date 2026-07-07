@@ -1,14 +1,10 @@
 package it.unibo.bioassault.view;
-
 import it.unibo.bioassault.model.GameSnapshot;
-
 import javax.swing.*;
 import java.awt.*;
-
 /**
- * HUD (Heads-Up Display) trasparente sovrapposto all'arena.
- *
- * Disegna in sovraimpressione:
+ * HUD trasparente sovrapposto all'arena.
+ * Disegna:
  *   - Barra HP del giocatore (in alto a sinistra)
  *   - Livello e barra XP
  *   - Timer di sopravvivenza (al centro)
@@ -16,13 +12,10 @@ import java.awt.*;
  *   - Slot armi (in basso a sinistra)
  *   - Minimappa (in basso a destra)
  *   - Annuncio ondata con fade in/out (al centro schermo, comparsa temporanea)
- *
- * E' un JPanel con setOpaque(false) posizionato sopra ArenaPanel
- * nel JLayeredPane di GameWindow.
  */
 public class HudPanel extends JPanel {
 
-    // ---- Colori HUD ---------------------------------------------------
+    // ---- Colori HUD ----
     private static final Color HUD_BG      = new Color(0,   0,   0,   100); // sfondo barre semitrasparente
     private static final Color HP_HIGH     = new Color(0x55efc4); // verde (hp alto)
     private static final Color HP_MED      = new Color(0xfdcb6e); // giallo (hp medio)
@@ -32,15 +25,22 @@ public class HudPanel extends JPanel {
     private static final Color TEXT_DIMMED = new Color(0x636e72); // grigio
     private static final Color WAVE_COLOR  = new Color(0x2ecc71); // verde brillante
 
-    // ---- Font riutilizzati --------------------------------------------
+    // ---- Font riutilizzati ----
     private static final Font FONT_MAIN  = new Font("Monospaced", Font.BOLD,  13);
     private static final Font FONT_LARGE = new Font("Monospaced", Font.BOLD,  22);
     private static final Font FONT_SMALL = new Font("Monospaced", Font.PLAIN, 11);
 
-    // ---- Snapshot corrente --------------------------------------------
+    // ---- Dimensioni HUD ----
+    private static final int TOP_BAR_HEIGHT    = 48;
+    private static final int BOTTOM_BAR_HEIGHT = 36;
+    private static final int MINIMAP_WIDTH     = 100;
+    private static final int MINIMAP_HEIGHT    = 75;
+    private static final int MINIMAP_MARGIN    = 10;
+
+    // ---- Snapshot corrente ----
     private GameSnapshot snapshot = null;
 
-    // ---- Per l'animazione dell'annuncio ondata -------------------------
+    // ---- Per l'animazione dell'annuncio ondata ----
     private int  lastWave     = 0;
     private long waveShowTime = 0;
     // Durata in ms durante cui l'annuncio ondata rimane visibile
@@ -51,7 +51,7 @@ public class HudPanel extends JPanel {
         setOpaque(false);
     }
 
-    /**
+    /*
      * Riceve il nuovo snapshot e aggiorna l'HUD.
      * Se l'ondata e' cambiata, avvia l'animazione di annuncio.
      */
@@ -64,14 +64,14 @@ public class HudPanel extends JPanel {
         repaint();
     }
 
-    // ------------------------------------------------------------------ //
-    //  Rendering
-    // ------------------------------------------------------------------ //
 
+    //  Rendering
     @Override
     protected void paintComponent(final Graphics g) {
         super.paintComponent(g);
-        if (snapshot == null) return;
+        if (snapshot == null) {
+            return;
+        }
 
         final Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,      RenderingHints.VALUE_ANTIALIAS_ON);
@@ -85,19 +85,16 @@ public class HudPanel extends JPanel {
         g2.dispose();
     }
 
-    // ---- Barra superiore: HP, livello, XP, timer, ondata ---------------
+    // ---- Barra superiore: HP, livello, XP, timer, ondata ----
 
     private void drawTopBar(final Graphics2D g2) {
-        final int W    = getWidth();
-        final int barH = 48;
-
-        // Sfondo semitrasparente della barra superiore
+        final int width = getWidth();
+        final int barH = TOP_BAR_HEIGHT;
         g2.setColor(HUD_BG);
-        g2.fillRect(0, 0, W, barH);
-
+        g2.fillRect(0, 0, width, barH);
         final int padding = 14;
 
-        // === HP ===
+        // HP
         drawLabel(g2, "HP", padding, 10, TEXT_DIMMED, FONT_SMALL);
         final float hpRatio = (float) snapshot.playerHp / snapshot.playerMaxHp;
         // Colore cambia in base alla percentuale di vita rimasta
@@ -106,12 +103,12 @@ public class HudPanel extends JPanel {
         drawLabel(g2, snapshot.playerHp + "/" + snapshot.playerMaxHp,
                 padding + 5, 32, hpColor, FONT_SMALL);
 
-        // === Livello ===
+        //vLivello
         final int lvX = padding + 160;
         drawLabel(g2, "LV",  lvX,      10, TEXT_DIMMED, FONT_SMALL);
         drawLabel(g2, String.valueOf(snapshot.level), lvX + 20, 34, TEXT_COLOR, FONT_LARGE);
 
-        // === XP ===
+        // XP 
         final int xpX = lvX + 60;
         drawLabel(g2, "XP", xpX, 10, TEXT_DIMMED, FONT_SMALL);
         final float xpRatio = snapshot.xpToNext > 0
@@ -120,29 +117,30 @@ public class HudPanel extends JPanel {
         drawLabel(g2, snapshot.xp + "/" + snapshot.xpToNext,
                 xpX + 5, 32, XP_COLOR, FONT_SMALL);
 
-        // === Timer di sopravvivenza (centrato) ===
+        // Timer di sopravvivenza (centrato)
         final String time = formatTime(snapshot.survivalSeconds);
         final FontMetrics fm = g2.getFontMetrics(FONT_LARGE);
-        drawLabel(g2, time, (W - fm.stringWidth(time)) / 2, 34, TEXT_COLOR, FONT_LARGE);
-        drawLabel(g2, "SOPRAVVIVENZA", (W - 120) / 2, 12, TEXT_DIMMED, FONT_SMALL);
+        drawLabel(g2, time, (width - fm.stringWidth(time)) / 2, 34, TEXT_COLOR, FONT_LARGE);
+        drawLabel(g2, "SOPRAVVIVENZA", (width - 120) / 2, 12, TEXT_DIMMED, FONT_SMALL);
 
-        // === Ondata (in alto a destra) ===
-        final int wX = W - 160;
+        // Ondata (in alto a destra) 
+        final int wX = width - 160;
         drawLabel(g2, "ONDATA",                           wX,      10, TEXT_DIMMED, FONT_SMALL);
         drawLabel(g2, "W" + snapshot.wave,                wX,      34, WAVE_COLOR,  FONT_LARGE);
         drawLabel(g2, snapshot.enemiesOnScreen + " nemici", wX + 48, 26, TEXT_DIMMED, FONT_SMALL);
     }
 
-    // ---- Barra inferiore: slot armi e hint tasti -----------------------
+    // Barra inferiore: slot armi e tasti 
 
     private void drawBottomBar(final Graphics2D g2) {
-        final int W = getWidth(), H = getHeight();
-        final int barH = 36;
+        final int width = getWidth();
+        final int height = getHeight();
+        final int barH = BOTTOM_BAR_HEIGHT;
         g2.setColor(HUD_BG);
-        g2.fillRect(0, H - barH, W, barH);
+        g2.fillRect(0, height - barH, width, barH);
 
         // Slot armi (massimo 6 slot)
-        final int slotSize = 28, slotY = H - barH + 4, spacing = 36;
+        final int slotSize = 28, slotY = height - barH + 4, spacing = 36;
         for (int i = 0; i < snapshot.weapons.length; i++) {
             final int slotX  = 10 + i * spacing;
             final boolean active = snapshot.weapons[i] != null;
@@ -163,16 +161,18 @@ public class HudPanel extends JPanel {
 
         // Hint tasti al centro della barra inferiore
         drawLabel(g2, "WASD / FRECCE = muovi   ESC = pausa",
-                W / 2 - 130, H - barH + 22, TEXT_DIMMED, FONT_SMALL);
+                width / 2 - 130, height - barH + 22, TEXT_DIMMED, FONT_SMALL);
     }
 
-    // ---- Annuncio ondata (appare per WAVE_DISPLAY_MS ms) ---------------
-
+    // Annuncio ondata 
     private void drawWaveAnnouncement(final Graphics2D g2) {
         final long elapsed = System.currentTimeMillis() - waveShowTime;
-        if (elapsed > WAVE_DISPLAY_MS) return;
+        if (elapsed > WAVE_DISPLAY_MS) {
+            return;
+        }
 
-        final int W = getWidth(), H = getHeight();
+        final int width = getWidth();
+        final int height = getHeight();
         final float progress = (float) elapsed / WAVE_DISPLAY_MS;
 
         // Calcolo alpha per fade-in (0-20%) e fade-out (70-100%)
@@ -181,15 +181,15 @@ public class HudPanel extends JPanel {
                 : progress > 0.7f ? 1f - (progress - 0.7f) / 0.3f
                 : 1f;
 
-        // Linee decorative orizzontali
-        final int lY = H / 2 - 30;
+        // Linee orizzontali
+        final int lY = height / 2 - 30;
         g2.setColor(new Color(WAVE_COLOR.getRed(), WAVE_COLOR.getGreen(),
                 WAVE_COLOR.getBlue(), (int)(alpha * 180)));
         g2.setStroke(new BasicStroke(1.5f));
-        g2.drawLine(W / 2 - 200, lY,      W / 2 + 200, lY);
-        g2.drawLine(W / 2 - 200, lY + 60, W / 2 + 200, lY + 60);
+        g2.drawLine(width / 2 - 200, lY,      width / 2 + 200, lY);
+        g2.drawLine(width / 2 - 200, lY + 60, width / 2 + 200, lY + 60);
 
-        // Testo grande "ONDATA X"
+        // Testo "ONDATA X"
         final Font waveFontBig   = new Font("Monospaced", Font.BOLD,  32);
         final Font waveFontSmall = new Font("Monospaced", Font.PLAIN, 14);
         final String waveStr = "ONDATA " + lastWave;
@@ -197,7 +197,7 @@ public class HudPanel extends JPanel {
         g2.setColor(new Color(WAVE_COLOR.getRed(), WAVE_COLOR.getGreen(),
                 WAVE_COLOR.getBlue(), (int)(alpha * 255)));
         final FontMetrics fm = g2.getFontMetrics(waveFontBig);
-        g2.drawString(waveStr, (W - fm.stringWidth(waveStr)) / 2, H / 2);
+        g2.drawString(waveStr, (width - fm.stringWidth(waveStr)) / 2, height / 2);
 
         // Sottotitolo
         final String sub = lastWave == 1 ? "LA CELLULA COMBATTE!" : "I VIRUS SI MOLTIPLICANO...";
@@ -205,16 +205,18 @@ public class HudPanel extends JPanel {
         g2.setColor(new Color(TEXT_COLOR.getRed(), TEXT_COLOR.getGreen(),
                 TEXT_COLOR.getBlue(), (int)(alpha * 180)));
         final FontMetrics fmS = g2.getFontMetrics(waveFontSmall);
-        g2.drawString(sub, (W - fmS.stringWidth(sub)) / 2, H / 2 + 22);
+        g2.drawString(sub, (width - fmS.stringWidth(sub)) / 2, height / 2 + 22);
     }
 
-    // ---- Minimappa (angolo in basso a destra) -------------------------
-
+    // Minimappa (angolo in basso a destra) 
     private void drawMinimap(final Graphics2D g2) {
-        final int W = getWidth(), H = getHeight();
-        final int mmW = 100, mmH = 75, margin = 10;
-        final int mmX = W - mmW - margin;
-        final int mmY = H - mmH - 40;
+        final int width = getWidth();
+        final int height = getHeight();
+        final int mmW = MINIMAP_WIDTH;
+        final int mmH = MINIMAP_HEIGHT;
+        final int margin = MINIMAP_MARGIN;
+        final int mmX = width - mmW - margin;
+        final int mmY = height - mmH - 40;
 
         // Sfondo minimappa
         g2.setColor(new Color(0, 0, 0, 160));
@@ -249,11 +251,7 @@ public class HudPanel extends JPanel {
         g2.drawString("MAPPA", mmX + 2, mmY - 2);
     }
 
-    // ================================================================== //
-    //  Helper di rendering
-    // ================================================================== //
-
-    /** Disegna una barra (HP, XP) con sfondo e riempimento proporzionale al ratio. */
+    /** Disegna una barra (HP, XP)*/
     private void drawBar(final Graphics2D g2,
                          final int x, final int y, final int w, final int h,
                          final float ratio, final Color fill, final Color bg) {
