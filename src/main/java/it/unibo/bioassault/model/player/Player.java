@@ -1,10 +1,10 @@
 package it.unibo.bioassault.model.player;
 
+import it.unibo.bioassault.model.combat.collisions.CollisionSystem;
 import it.unibo.bioassault.model.Game;
 import it.unibo.bioassault.model.GameObject;
 import it.unibo.bioassault.model.Handler;
 import it.unibo.bioassault.model.ID;
-import it.unibo.bioassault.model.viruses.Virus;
 import it.unibo.bioassault.model.combat.Projectile;
 import it.unibo.bioassault.model.combat.weapons.AntibodyWeapon;
 import it.unibo.bioassault.model.combat.weapons.Weapon;
@@ -17,32 +17,45 @@ import java.awt.*;
  */  
 public class Player extends GameObject {
 
-    Handler handler;
+    private final Handler handler;
     private int hp = 100; 
     private int shootCooldown = 0; 
     private final Weapon weapon = new AntibodyWeapon(); // Arma usata dal player
     private float lastDirX = 1;
     private float lastDirY = 0;
+
     public boolean hasStartedMoving = false;
+
+    /**
+     * Crea un nuovo player.
+     *
+     * @param x posizione iniziale orizzontale
+     * @param y posizione iniziale verticale
+     * @param id identificatore dell'oggetto
+     * @param handler gestore degli oggetti
+     */
 
     public Player(int x, int y, ID id, Handler handler) {
         super(x, y, id);      
         this.handler = handler;
     }
 
-   
+    /**
+     * Aggiorna lo stato del player.
+     */
 
     @Override
     public void tick() {
-    updateMovement();
-    updateShootingDirection();
-    handleCollisions();
-    updateShooting();
+        updateMovement();
+        updateShootingDirection();
+        handleCollisions();
+        updateShooting();
     }
+
     /**
-    * Aggiorna la velocità e la posizione del player in base all'input.
-    * Mantiene inoltre il player all'interno dei limiti del mondo di gioco.
+    * Aggiorna la velocità e la posizione del player 
     */
+
     private void updateMovement() {
          if (handler.isUp() && !handler.isDown()) {
         velY = -5;
@@ -93,18 +106,18 @@ public class Player extends GameObject {
         lastDirY = 1;
     }
     }
+
     /**
     * Controlla le collisioni tra il player e i virus.
-    * Quando le rispettive hitbox si intersecano, il player subisce danno.
     */
+
     private void handleCollisions() {
-        for (final GameObject object : handler.object) {
-            if (object instanceof Virus
-                && this.getBounds().intersects(object.getBounds())) {
-                this.takeDamage(1);
-            }
-        }
+    CollisionSystem.handlePlayerVirusCollisions(handler,this,1);
     }
+
+    /**
+     * Gestisce il cooldown e la creazione dei proiettili.
+     */
 
     private void updateShooting() {
         if (shootCooldown > 0) {
@@ -125,9 +138,10 @@ public class Player extends GameObject {
     shootCooldown = 30;
     }
 
+
     @Override
     public void render(Graphics g) {
-        g.setColor(Color.blue);
+        g.setColor(Color.BLUE);
         g.fillRect((int) x, (int) y, 32, 48);
 
     }
@@ -140,15 +154,13 @@ public class Player extends GameObject {
     // Applica un danno alla cellula
     public void takeDamage(final int damage) {
 
-        if (damage < 0) { // Il danno non può essere negativo
-            throw new IllegalArgumentException(
-            "Il danno non può essere negativo"
-            );
+        if (damage < 0) { 
+            throw new IllegalArgumentException("Il danno non può essere negativo");
         }
 
      this.hp = Math.max(
-            0,                  // HP minimi consentiti
-            this.hp - damage    // HP dopo il danno
+            0,                  
+            this.hp - damage   
         );
     }
 
@@ -157,7 +169,7 @@ public class Player extends GameObject {
         return this.hp;
     }
 
-    // Verifica se la cellula è morta
+    // Verifica se il player è morto
     public boolean isDead() {
       return this.hp <= 0; 
     }
