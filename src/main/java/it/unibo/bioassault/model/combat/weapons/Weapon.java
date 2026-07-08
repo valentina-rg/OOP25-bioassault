@@ -7,6 +7,7 @@ public abstract class Weapon {
 
     private final int damage; 
     private final float projectileSpeed; 
+    private final String name;
     
     /**
     * Crea una nuova arma.
@@ -15,9 +16,10 @@ public abstract class Weapon {
      * @param projectileSpeed velocità del proiettile
      */
 
-    protected Weapon(final int damage, final float projectileSpeed) {
+    protected Weapon(final int damage, final float projectileSpeed,final String name) {
         this.damage = damage; 
         this.projectileSpeed = projectileSpeed; 
+        this.name = name;
     }
 
      /**
@@ -40,4 +42,7 @@ public abstract class Weapon {
         return this.projectileSpeed; 
     }
     
+    public String getName() {
+        return this.name;
+    }
 }

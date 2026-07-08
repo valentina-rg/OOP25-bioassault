@@ -7,6 +7,7 @@ import it.unibo.bioassault.model.Handler;
 import it.unibo.bioassault.model.ID;
 import it.unibo.bioassault.model.combat.Projectile;
 import it.unibo.bioassault.model.combat.weapons.AntibodyWeapon;
+import it.unibo.bioassault.model.combat.weapons.InterferonWeapon;
 import it.unibo.bioassault.model.combat.weapons.Weapon;
 
 import java.awt.*;
@@ -20,11 +21,28 @@ public class Player extends GameObject {
     private final Handler handler;
     private int hp = 100; 
     private int shootCooldown = 0; 
-    private final Weapon weapon = new AntibodyWeapon(); // Arma usata dal player
     private float lastDirX = 1;
     private float lastDirY = 0;
-
     public boolean hasStartedMoving = false;
+
+    /**
+    * Armi disponibili per il player.
+    */
+    private final Weapon[] weapons = {
+        new AntibodyWeapon(),
+        new InterferonWeapon()
+    };
+
+    /**
+    * Indice dell'arma attualmente equipaggiata.
+    */
+    private int currentWeaponIndex;
+
+    /**
+    * Indica se il tasto per il cambio arma era già premuto
+    * nel tick precedente.
+    */
+    private boolean switchWeaponWasPressed;
 
     /**
      * Crea un nuovo player.
@@ -49,6 +67,7 @@ public class Player extends GameObject {
         updateMovement();
         updateShootingDirection();
         handleCollisions();
+        updateWeaponSwitch();
         updateShooting();
     }
 
@@ -116,6 +135,17 @@ public class Player extends GameObject {
     }
 
     /**
+    * Cambia arma quando viene premuto il tasto dedicato.
+    * Il cambio avviene una sola volta per ogni pressione.
+     */
+    private void updateWeaponSwitch() {
+        if (handler.isSwitchWeapon() && !switchWeaponWasPressed) {
+            currentWeaponIndex = (currentWeaponIndex + 1) % weapons.length;
+    }
+    switchWeaponWasPressed = handler.isSwitchWeapon();
+}
+
+    /**
      * Gestisce il cooldown e la creazione dei proiettili.
      */
 
@@ -129,11 +159,12 @@ public class Player extends GameObject {
         (int) x + 32,
         (int) y + 20,
         handler,
-        lastDirX * weapon.getProjectileSpeed(),
-        lastDirY * weapon.getProjectileSpeed(),
-        weapon.getDamage(),
+        lastDirX * weapons[currentWeaponIndex].getProjectileSpeed(),
+        lastDirY * weapons[currentWeaponIndex].getProjectileSpeed(),
+        weapons[currentWeaponIndex].getDamage(),
+        weapons[currentWeaponIndex].getName(),
         ID.Projectile
-    ));
+ ));
 
     shootCooldown = 30;
     }
@@ -158,7 +189,7 @@ public class Player extends GameObject {
     */
    
     public Weapon getWeapon() {
-        return this.weapon;
+        return this.weapons[this.currentWeaponIndex];
     }
 
     // Applica un danno alla cellula
