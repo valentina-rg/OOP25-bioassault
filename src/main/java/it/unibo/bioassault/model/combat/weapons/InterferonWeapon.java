@@ -8,6 +8,6 @@ package it.unibo.bioassault.model.combat.weapons;
         * Crea un'arma interferone.
         */
         public InterferonWeapon() {
-        super(20, 5.0f); // 20 danni, proiettile più lento
+        super(20, 5.0f, "Interferon"); // 20 danni, proiettile più lento
         }
     }

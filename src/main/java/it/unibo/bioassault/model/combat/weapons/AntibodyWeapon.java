@@ -10,6 +10,6 @@ public class AntibodyWeapon extends Weapon {
     */
 
     public AntibodyWeapon() {
-      super(30, 10.0f); // 30 danni, proiettile veloce
+      super(30, 10.0f, "Antibody"); // 30 danni, proiettile veloce
     }
 }
