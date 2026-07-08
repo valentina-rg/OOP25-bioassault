@@ -1,4 +1,4 @@
-package it.unibo.bioassault.model;
+package it.unibo.bioassault.view;
 
 /**
  * Tipi di nemici presenti nel gioco.

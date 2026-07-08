@@ -1,4 +1,4 @@
-package it.unibo.bioassault.model;
+package it.unibo.bioassault.view;
 
 /**
  * Dati di un nemico da passare alla View tramite GameSnapshot.
