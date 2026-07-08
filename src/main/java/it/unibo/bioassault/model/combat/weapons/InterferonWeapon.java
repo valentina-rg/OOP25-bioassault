@@ -1,4 +1,3 @@
-
 package it.unibo.bioassault.model.combat.weapons;
 /**
  * Arma alternativa con proiettili più lenti
