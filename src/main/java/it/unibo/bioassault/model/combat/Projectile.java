@@ -10,17 +10,26 @@ import java.awt.*;
 public class Projectile extends GameObject {
 
     private final Handler handler; 
-    private final int damage; 
+    private final int damage;
+    private final String weaponName; 
     private final int size = 13; 
-
-    public Projectile(final int x, final int y, final Handler handler, final float velX, final float velY, final int damage, ID id) {
+    
+    public Projectile(final int x, final int y, final Handler handler, final float velX, final float velY, final int damage,final String weaponName, ID id) {
         super(x, y, id);
         this.handler = handler;
         this.velX = velX;
         this.velY = velY;
         this.damage = damage;
+        this.weaponName = weaponName;
     }
-
+    /**
+    * Restituisce il nome dell'arma che ha generato il proiettile.
+    *
+     * @return nome dell'arma
+    */
+    public String getWeaponName() {
+        return this.weaponName;
+    }
     /**
     * Aggiorna la posizione del proiettile e controlla le collisioni.
     * Il proiettile viene rimosso quando colpisce un virus
