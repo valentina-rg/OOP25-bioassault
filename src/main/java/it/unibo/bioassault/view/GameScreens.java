@@ -1,5 +1,4 @@
 package it.unibo.bioassault.view;
-import it.unibo.bioassault.model.UpgradeOption;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;

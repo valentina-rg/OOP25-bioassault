@@ -1,5 +1,4 @@
 package it.unibo.bioassault.view;
-import it.unibo.bioassault.model.GameSnapshot;
 import javax.swing.*;
 import java.awt.*;
 

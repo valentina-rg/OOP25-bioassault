@@ -1,4 +1,4 @@
-package it.unibo.bioassault.model;
+package it.unibo.bioassault.view;
 
 /**
  * Dati di un proiettile da passare alla View tramite GameSnapshot.
@@ -7,14 +7,14 @@ package it.unibo.bioassault.model;
 public class ProjectileData {
 
     public float   x, y;       // posizione nel mondo
-    public boolean isSpecial;  // true = proiettile speciale (stella a 4 punte)
+    public String weaponName;  // nome dell'arma che ha sparato il proiettile (es. "Interferon")
     public float   rotation;   // angolo di rotazione per l'animazione
 
     public ProjectileData(final float x, final float y,
-                          final boolean isSpecial, final float rotation) {
+                          final String weaponName, final float rotation) {
         this.x         = x;
         this.y         = y;
-        this.isSpecial = isSpecial;
+        this.weaponName = weaponName;
         this.rotation  = rotation;
     }
 }

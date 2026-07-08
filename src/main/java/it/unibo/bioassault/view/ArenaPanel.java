@@ -1,8 +1,5 @@
 package it.unibo.bioassault.view;
 import it.unibo.bioassault.BufferedImageLoader;
-import it.unibo.bioassault.model.EnemyData;
-import it.unibo.bioassault.model.GameSnapshot;
-import it.unibo.bioassault.model.ProjectileData;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.*;
@@ -191,8 +188,8 @@ public class ArenaPanel extends JPanel {
             g2.setColor(new Color(253, 203, 110, 60)); // 0xfdcb6e con alpha 60
             g2.fillOval((int)(p.x - 8), (int)(p.y - 8), 16, 16);
             g2.setColor(PROJ_COLOR);
-            if (p.isSpecial) {
-                drawStar4(g2, p.x, p.y, 7, p.rotation); // proiettile speciale = stella
+            if ("Interferon".equals(p.weaponName)) {
+                drawStar4(g2, p.x, p.y, 7, p.rotation); // Interferone = stella
             } else {
                 g2.fillOval((int)(p.x - 4), (int)(p.y - 4), 8, 8); // proiettile normale
             }
