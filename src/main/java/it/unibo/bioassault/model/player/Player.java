@@ -151,7 +151,18 @@ public class Player extends GameObject {
         return new Rectangle((int) x, (int)y, 32, 48);
     }
 
+    /**
+    * Restituisce l'arma attualmente equipaggiata dal player.
+    *
+    * @return arma equipaggiata dal player
+    */
+   
+    public Weapon getWeapon() {
+        return this.weapon;
+    }
+
     // Applica un danno alla cellula
+
     public void takeDamage(final int damage) {
 
         if (damage < 0) { 
