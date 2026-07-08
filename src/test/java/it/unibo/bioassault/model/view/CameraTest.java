@@ -15,7 +15,8 @@ import it.unibo.bioassault.view.Camera;
 class CameraTest {
 
     private static class DummyGameObject extends GameObject {
-
+        // TODO spawno la camera, spawno n gameobjects, controllo se dopo un tick di camera, gli sprite di tutti gli oggetti dentro lo schermo vengono caricati.
+        // TODO Controllo anche che quelli fuori dallo schermo non vengano caricati.
         DummyGameObject(int x, int y) {
             super(x, y, null);
         }
