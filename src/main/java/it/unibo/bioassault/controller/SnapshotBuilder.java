@@ -7,6 +7,7 @@ import it.unibo.bioassault.model.player.Player;
 import it.unibo.bioassault.model.viruses.Virus;
 import it.unibo.bioassault.model.viruses.types.Bacteria;
 import it.unibo.bioassault.model.viruses.types.SpikyVirus;
+import it.unibo.bioassault.model.viruses.types.BossVirus;
 
 import java.util.*;
 
@@ -42,6 +43,7 @@ final class SnapshotBuilder {
                 final EnemyType type =
                         (v instanceof SpikyVirus) ? EnemyType.BASIC
                       : (v instanceof Bacteria)   ? EnemyType.FAST
+                      : (v instanceof BossVirus) ? EnemyType.ELITE
                       : EnemyType.FAST;
                 enemies.add(new EnemyData(v.getX() + 16, v.getY() + 16,
                         v.getHp(), v.getMaxHp(), type));

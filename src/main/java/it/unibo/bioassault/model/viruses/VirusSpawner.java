@@ -6,21 +6,19 @@ import java.util.Random;
 
 public class VirusSpawner {
 
-    private static final int TIME_LEVEL_1 = 20; // fino a 20s: solo Spike, spawn dolce
-    private static final int BOSS_TIME = 45;    // al secondo 45: spawn boss (una tantum)
+    private static final int TIME_LEVEL_1 = 20;
+    private static final int BOSS_TIME = 45;
 
-    private static final int SPAWN_RATE_SLOW = 1;      // virus al secondo, fase 1 (solo Spike)
-    private static final int SPAWN_RATE_MIN_PHASE2 = 2; // virus al secondo, inizio fase 2
-    private static final int SPAWN_RATE_MAX_PHASE2 = 5; // virus al secondo, picco fase 2 (appena prima del boss)
-    private static final int RAMP_UP_STEP_SECONDS = 7;  // ogni quanti secondi sale di 1 in fase 2
+    private static final double SPAWN_RATE_SLOW = 0.5;
+    private static final double SPAWN_RATE_MIN_PHASE2 = 1.0;
+    private static final double SPAWN_RATE_MAX_PHASE2 = 2.0;
+    private static final int RAMP_UP_STEP_SECONDS = 10;
 
     private final Handler handler;
-    private int spawnRate = SPAWN_RATE_SLOW;
+    private double spawnRate = SPAWN_RATE_SLOW;
 
     private final long begin;
     private long lastSpawnTime;
-    private int currentSecond;
-    private long currentTime;
 
     private boolean bossSpawned = false;
 
@@ -34,33 +32,30 @@ public class VirusSpawner {
         this.gen1 = new GenerateSpike();
         this.gen2 = new GenerateBacteria();
         this.genBoss = new GenerateBoss();
-        this.begin = System.currentTimeMillis() / 1000;
+        this.begin = System.currentTimeMillis();
+        this.lastSpawnTime = this.begin;
     }
 
     public void spawnViruses() {
-        long elapsedTime;
+        final long currentTime = System.currentTimeMillis();
+        final long elapsedTime = currentTime - lastSpawnTime;
 
-        currentTime = System.currentTimeMillis();
-        currentSecond = (int) (currentTime / 1000);
+        if (!bossSpawned && diff() >= BOSS_TIME) {
+            spawnBoss();
+            bossSpawned = true;
+            return;
+        }
 
-        elapsedTime = currentTime - lastSpawnTime;
-
-        // Il boss è comparso: lo spawn normale si ferma definitivamente
         if (bossSpawned) {
             return;
         }
 
         updateSpawnRate();
 
-        if (elapsedTime >= 1000 / spawnRate) {
+        if (elapsedTime >= (long) (1000 / spawnRate)) {
             final Virus x = generateViruses();
             handler.addObject(x);
             lastSpawnTime = currentTime;
-        }
-
-        if (diff() >= BOSS_TIME) {
-            spawnBoss();
-            bossSpawned = true;
         }
     }
 
@@ -68,12 +63,6 @@ public class VirusSpawner {
         spawnViruses();
     }
 
-    /**
-     * Calcola il ritmo di spawn corrente in base al tempo trascorso.
-     * Fase 1 (0-20s): ritmo fisso e dolce, solo Spike.
-     * Fase 2 (20s-55s): il ritmo cresce gradualmente ogni RAMP_UP_STEP_SECONDS,
-     * fino a un massimo di SPAWN_RATE_MAX_PHASE2, per un'aggressività crescente.
-     */
     private void updateSpawnRate() {
         final int elapsed = diff();
 
@@ -91,12 +80,6 @@ public class VirusSpawner {
         );
     }
 
-    /**
-     * Fase 1 (0-20s): solo Spike.
-     * Fase 2 (20s+): Spike e Bacteria insieme, scelti a caso 50/50.
-     *
-     * @return virus.
-     */
     private Virus generateViruses() {
         if (diff() < TIME_LEVEL_1) {
             return gen1.createVirus(this.handler);
@@ -107,28 +90,12 @@ public class VirusSpawner {
                 : gen2.createVirus(this.handler);
     }
 
-    /**
-     * Spawna il boss finale
-     */
     private void spawnBoss() {
         final Virus boss = genBoss.createVirus(this.handler);
         handler.addObject(boss);
     }
 
     final int diff() {
-        return (int) (currentSecond - this.begin);
+        return (int) ((System.currentTimeMillis() - this.begin) / 1000);
     }
-
-   /* public int getCurrentWave() {
-        if (diff() < TIME_LEVEL_1) {
-            return 1;
-        }
-        if (diff() < TIME_LEVEL_2) {
-            return 2;
-        }
-        if (diff() < TIME_LEVEL_3) {
-            return 3;
-        }
-        return 4;
-    }*/
 }

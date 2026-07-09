@@ -45,6 +45,7 @@ public class ArenaPanel extends JPanel {
     private BufferedImage basicVirusSprite = null;  // sprite-virus.png
     private BufferedImage playerSprite     = null;  //sprite-player.png
     private BufferedImage bacteriaSprite   = null;  // bacteria-sprite.png
+    private BufferedImage bossVirusSprite  = null;
 
     // Snapshot corrente (aggiornato dal Controller ogni frame)
     private GameSnapshot snapshot = null;
@@ -80,6 +81,11 @@ public class ArenaPanel extends JPanel {
         bacteriaSprite = loader.loadImage("/sprite/virus/bacteria-sprite.png");
         if (bacteriaSprite == null) {
             System.err.println("[ArenaPanel] Sprite batterio non trovato, uso disegno procedurale.");
+        }
+
+        bossVirusSprite = loader.loadImage("/sprite/virus/boss_virus_sprite_transparent.png");
+        if (bossVirusSprite == null) {
+            System.err.println("[ArenaPanel] Sprite boss non trovato, uso disegno procedurale.");
         }
     }
 
@@ -253,20 +259,20 @@ public class ArenaPanel extends JPanel {
 
     //Virus elite: esagono arancione con alone pulsante.
     private void drawEliteVirus(final Graphics2D g2, final EnemyData e) {
-        final int r = ELITE_VIRUS_RADIUS;
-        //  Alone pulsante (l'intensita' varia nel tempo)
-        final float pulse = 0.5f + 0.5f * (float) Math.sin(System.currentTimeMillis() / 300.0);
-        g2.setColor(new Color(1f, 0.4f, 0f, 0.15f + 0.1f * pulse));
-        g2.fillOval((int)(e.x - r - 12), (int)(e.y - r - 12), (r + 12) * 2, (r + 12) * 2);
-        //  Corpo esagonale
-        final int[] xs = new int[6], ys = new int[6];
-        for (int i = 0; i < 6; i++) {
-            final double a = Math.PI / 3.0 * i - Math.PI / 6.0;
-            xs[i] = (int) e.x + (int)(Math.cos(a) * r);
-            ys[i] = (int) e.y + (int)(Math.sin(a) * r);
+        final int size = 300;
+        final int half = size / 2;
+
+        if (bossVirusSprite != null) {
+            g2.drawImage(bossVirusSprite,
+                    (int) e.x - half,
+                    (int) e.y - half,
+                    size, size,
+                    null);
+        } else {
+            g2.setColor(new Color(0, 200, 80));
+            g2.fillOval((int) e.x - half, (int) e.y - half, size, size);
         }
-        g2.setColor(new Color(0xe17055));
-        g2.fill(new Polygon(xs, ys, 6));
+
         drawHealthBar(g2, e);
     }
 
