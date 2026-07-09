@@ -11,70 +11,72 @@ import java.util.Random;
 
 public abstract class Virus extends GameObject {
 
-    protected Handler handler;
-    protected Random r = new Random();
-    protected float mx; // Player Position throu observer
-    protected float my; // Player Position throu observer
+    protected final Handler handler;
+    protected final Random r = new Random();
+
+    protected float mx;
+    protected float my;
     protected Player player;
     protected RunStats stats;
 
-    // Attributi che ogni tipo di virus avrà
     protected int hp;
-    protected float speed;
     protected int maxHp;
+    protected float speed;
     protected int choose = 0;
 
     private boolean isBig;
+    private boolean dead;
 
-    public Virus(int x, int y, ID id, Handler handler, int hp, float speed) {
+    public Virus(final int x, final int y, final ID id,
+                 final Handler handler, final int hp, final float speed) {
         super(x, y, id);
         this.handler = handler;
         this.hp = hp;
-        this.speed = speed;
         this.maxHp = hp;
+        this.speed = speed;
+        this.dead = false;
 
-        // Velocità iniziale random comune a tutti i virus
         velX = r.nextInt(7) - 3;
         velY = r.nextInt(7) - 3;
-        if (velX == 0 && velY == 0) velX = 1;
+        if (velX == 0 && velY == 0) {
+            velX = 1;
+        }
     }
 
     /**
      * Metodo comune per inseguire il player.
-     * Le classi figlie lo chiameranno nel loro tick().
      */
     protected void trackPlayer() {
-        GameObject player = null;
-        for (GameObject obj : handler.object) {
-            if (obj.getId() == ID.Player) {
-                player = obj;
-                break;
-            }
+        final GameObject target = getPlayer();
+        if (target == null) {
+            velX = 0;
+            velY = 0;
+            return;
         }
 
-        if (player == null) return;
-
-        it.unibo.bioassault.model.player.Player p =
-                (it.unibo.bioassault.model.player.Player) player;
+        final Player p = (Player) target;
 
         if (!p.hasStartedMoving) {
             velX = 0;
             velY = 0;
-        } else {
-            float dx = p.getX() - x;
-            float dy = p.getY() - y;
-            float length = (float) Math.sqrt(dx * dx + dy * dy);
-            if (length != 0) {
-                dx /= length;
-                dy /= length;
-            }
-            velX = dx * this.speed;
-            velY = dy * this.speed;
+            return;
         }
+
+        float dx = p.getX() - x;
+        float dy = p.getY() - y;
+        final float length = (float) Math.sqrt(dx * dx + dy * dy);
+
+        if (length != 0) {
+            dx /= length;
+            dy /= length;
+        }
+
+        velX = dx * this.speed;
+        velY = dy * this.speed;
     }
 
     /**
-     * Metodo comune per gestire i rimbalzi a schermo e il movimento erratico.
+     * Movimento comune con rimbalzo sui bordi.
      */
     protected void updateMovementAndBounds() {
         x += velX;
@@ -84,26 +86,41 @@ public abstract class Virus extends GameObject {
         if (choose == 0) {
             velX = r.nextInt(7) - 3;
             velY = r.nextInt(7) - 3;
-            if (velX == 0 && velY == 0) velX = 1;
+            if (velX == 0 && velY == 0) {
+                velX = 1;
+            }
         }
 
-        if (x <= 0 || x >= Game.WORLD_WIDTH - 32) velX *= -1;
-        if (y <= 0 || y >= Game.WORLD_HEIGHT - 32) velY *= -1;
+        if (x <= 0 || x >= Game.WORLD_WIDTH - 32) {
+            velX *= -1;
+        }
+        if (y <= 0 || y >= Game.WORLD_HEIGHT - 32) {
+            velY *= -1;
+        }
     }
 
     public final void update() {
-        mx = this.player.getX();
-        my = this.player.getY();
+        final GameObject target = getPlayer();
+        if (target != null) {
+            mx = target.getX();
+            my = target.getY();
+            if (target instanceof Player) {
+                this.player = (Player) target;
+            }
+        }
     }
 
     public void reachTarget() {
         this.setX(this.getX() + this.velX);
         this.setY(this.getY() + this.velY);
 
-        final float angle = (float) Math.atan2(my - this.getY() + 8, mx - this.getX() + 4);
+        final float angle = (float) Math.atan2(
+                my - this.getY() + 8,
+                mx - this.getX() + 4
+        );
 
-        this.velX = (float) ((this.speed) * Math.cos(angle));
-        this.velY = (float) ((this.speed) * Math.sin(angle));
+        this.velX = (float) (this.speed * Math.cos(angle));
+        this.velY = (float) (this.speed * Math.sin(angle));
     }
 
     protected GameObject getPlayer() {
@@ -111,7 +128,7 @@ public abstract class Virus extends GameObject {
             return null;
         }
 
-        for (GameObject obj : handler.object) {
+        for (final GameObject obj : handler.object) {
             if (obj.getId() == ID.Player) {
                 return obj;
             }
@@ -120,82 +137,81 @@ public abstract class Virus extends GameObject {
     }
 
     /**
-     * Imposta la posizione iniziale del virus in un raggio casuale attorno al giocatore.
+     * Posizione iniziale casuale attorno al giocatore.
      */
     public final void setStartingPosition(final float minDistance, final float maxDistance) {
-        GameObject player = getPlayer();
-        float px = (player != null) ? player.getX() : 0;
-        float py = (player != null) ? player.getY() : 0;
+        final GameObject target = getPlayer();
+        final float px = (target != null) ? target.getX() : 0;
+        final float py = (target != null) ? target.getY() : 0;
 
-        // Calcola un angolo casuale e una distanza casuale tra i due limiti
-        float angle = (float) (Math.random() * 2 * Math.PI);
-        float distance = minDistance + r.nextFloat() * (maxDistance - minDistance);
+        final float angle = (float) (Math.random() * 2 * Math.PI);
+        final float distance = minDistance + r.nextFloat() * (maxDistance - minDistance);
 
-        // Imposta le coordinate del virus in base a calcoli trigonometrici dal player
         this.x = px + (float) (distance * Math.cos(angle));
         this.y = py + (float) (distance * Math.sin(angle));
     }
 
-    /**
-     * Define if a virus is a big one.
-     */
-    public void setIsBig(boolean isBig) {
-        if (isBig) {
+    public void setIsBig(final boolean isBig) {
+        if (isBig && !this.isBig) {
             this.hp *= 2;
             this.maxHp *= 2;
         }
         this.isBig = isBig;
     }
 
-    // Applica un danno al virus
-    public void takeDamage(final int damage) {
+    public boolean isBig() {
+        return this.isBig;
+    }
 
-        if (damage < 0) { // Il danno non può essere negativo
+    public void setStats(final RunStats stats) {
+        this.stats = stats;
+    }
+
+    public void takeDamage(final int damage) {
+        if (damage < 0) {
             throw new IllegalArgumentException("Il danno non può essere negativo");
         }
 
-        this.hp = Math.max(
-                0,                  // HP minimi consentiti
-                this.hp - damage    // HP dopo il danno
-        );
-    public boolean isBig() {
-        return isBig;
+        if (dead) {
+            return;
+        }
+
+        this.hp = Math.max(0, this.hp - damage);
+
+        if (this.hp == 0) {
+            die();
+        }
     }
 
-        this.checkDeath(); // Dopo aver subito danno, controlla se il virus deve morire
-    }
-    public void kills(){
-        if (VirusCombatUtils.isDead(this)) {
+    protected void die() {
+        if (dead) {
+            return;
+        }
+
+        dead = true;
+
+        if (stats != null) {
             stats.recordKill(this.getClass().getSimpleName(), this.isBig(), false);
+        }
+
+        if (handler != null) {
             handler.removeObject(this);
         }
     }
-}
 
-    // Restituisce gli HP correnti del virus
     public int getHp() {
-        return this.hp; // Restituisce gli HP attuali del virus
+        return this.hp;
     }
 
-    /**
-     * Restituisce gli HP massimi del virus.
-     *
-     * @return HP massimi del virus
-    */
     public int getMaxHp() {
         return this.maxHp;
     }
 
-    // Verifica se il virus è morto
-    public boolean isDead() {
-        return this.hp <= 0; // Il virus è morto se gli HP sono pari a zero
+    public float getSpeed() {
+        return this.speed;
     }
 
-    // Rimuove il virus dal gioco se è morto
-    private void checkDeath() {
-
-        if (this.isDead()) { // Se gli HP sono finiti
-            this.handler.removeObject(this); // Rimuove questo virus dalla lista degli oggetti di gioco
-        }
+    public boolean isDead() {
+        return dead || this.hp <= 0;
     }
 }
