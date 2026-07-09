@@ -10,7 +10,11 @@ import java.awt.*;
 //ATTENZIONE: player di prova per verificare lo spawn dei nemici. codice base da migliorare e da espandere
 public class Player extends GameObject {
 
-    Handler handler;
+    private Handler handler;
+
+    private static final float BASE_SPEED_REFERENCE = 150.0f;
+    private static final float BASE_PIXEL_SPEED = 5.0f;
+
 
     public Player(int x, int y, ID id, Handler handler) {
         super(x, y, id);
@@ -19,12 +23,16 @@ public class Player extends GameObject {
 
     public boolean hasStartedMoving = false;
 
-
+    /** Converts PlayerStats.moveSpeed to actual pixel-per-tick velocity. */
+    private float resolvedSpeed() {
+        return (handler.getPlayerStats().getMoveSpeed() / BASE_SPEED_REFERENCE) * BASE_PIXEL_SPEED;
+    }
 
     @Override
     public void tick() {
         // input -> velocità
-
+        final float spd = resolvedSpeed();
+        
         // ASSE Y
         if (handler.isUp() && !handler.isDown()) {
             velY = -5;

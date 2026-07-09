@@ -3,13 +3,18 @@ package it.unibo.bioassault.model;
 import it.unibo.bioassault.BufferedImageLoader;
 import it.unibo.bioassault.control.KeyInput;
 import it.unibo.bioassault.model.player.Player;
+import it.unibo.bioassault.model.stats.RunStats;
 import it.unibo.bioassault.model.viruses.VirusSpawner;
 import it.unibo.bioassault.view.Camera;
 import it.unibo.bioassault.view.Window;
+//import it.unibo.bioassault.view.GameOverScreen;
+//import it.unibo.bioassault.view.LevelUpScreen; 
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.util.logging.Handler;
+
 import it.unibo.bioassault.model.viruses.types.SpikyVirus;
 import static it.unibo.bioassault.model.ID.Enemy;
 
@@ -32,6 +37,12 @@ public class Game extends Canvas implements Runnable {
 
     private int initialEnemies = 10; // quanti nemici iniziali
 
+    private boolean gameOver  = false;   // true after endRun()
+    private boolean paused = false;   // true while level-up screen is open
+    private boolean survived = false;
+    private LevelUpScreen  levelUpScreen;
+    private GameOverScreen gameOverScreen;
+
 
     public Game() {
         new Window(WINDOW_WIDTH, WINDOW_HEIGHT, "BioAssault", this);
@@ -50,6 +61,20 @@ public class Game extends Canvas implements Runnable {
         handler.addObject(new Player(100, 100, ID.Player, handler));
         spawner = new VirusSpawner(handler);
 
+        levelUpScreen  = new LevelUpScreen(WINDOW_WIDTH, WINDOW_HEIGHT);
+        gameOverScreen = new GameOverScreen(WINDOW_WIDTH, WINDOW_HEIGHT);
+
+        this.addMouseListener(levelUpScreen.getMouseAdapter());
+        this.addMouseMotionListener(levelUpScreen.getMouseAdapter());
+
+        ExperienceSystem xp = handler.getExperienceSystem();
+        xp.addLevelUpListener((newLevel, choices) -> {
+            paused = true;
+            levelUpScreen.show(newLevel, choices, upgrade -> {
+                xp.applyUpgrade(upgrade);
+                paused = false;
+            });
+        });
     }
 
     private void start(){
@@ -143,6 +168,18 @@ public class Game extends Canvas implements Runnable {
         // DISATTIVA LA CAMERA
         g2d.translate(camera.getX(), camera.getY());
 
+        if (levelUpScreen.isVisible()) {
+            levelUpScreen.render(g);
+        }
+
+        if (gameOver) {
+            RunStats rs = handler.getRunStats();
+            gameOverScreen.render(g, rs,
+                handler.getExperienceSystem().getLevel(),
+                handler.getExperienceSystem().getAcquired(),
+                survived);
+        }
+
         g.dispose();
         bs.show();
     }
@@ -169,6 +206,16 @@ public class Game extends Canvas implements Runnable {
 
             }
         }
+    }
+
+        /** Call this to trigger the game-over screen (e.g. when player HP reaches 0). */
+    public void triggerGameOver(boolean survived) {
+        this.survived = survived;
+        this.gameOver = true;
+        handler.getRunStats().endRun(survived);
+        System.out.println(handler.getRunStats().toSummaryString(
+            handler.getExperienceSystem().getLevel(),
+            handler.getExperienceSystem().getAcquired()));
     }
 
 }

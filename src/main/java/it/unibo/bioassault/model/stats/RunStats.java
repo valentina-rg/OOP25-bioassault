@@ -26,7 +26,7 @@ public class RunStats{
     private int eliteKills = 0;
     private int bossKills = 0;
     private long totalXp      = 0;
-    private int goldCollected= 0;
+    private int goldCollected = 0;
     private float damageDealt  = 0;
     private float damageTaken  = 0;
     private int healUsed    = 0;
@@ -101,6 +101,46 @@ public class RunStats{
     public void endRun(boolean survived) {
       this.survived = survived;
       this.endTimeMs = System.currentTimeMillis();  
+    }
+
+    public int getKills() { 
+        return kills; 
+    }
+
+    public int getEliteKills() { 
+        return eliteKills; 
+    }
+
+    public int getBossKills() { 
+        return bossKills; 
+    }
+
+    public long getTotalXp() { 
+        return totalXp; 
+    }
+
+    public int getGoldCollected() { 
+        return goldCollected; 
+    }
+
+    public float getDamageDealt() { 
+        return damageDealt; 
+    }
+
+    public float getDamageTaken() { 
+        return damageTaken; 
+    }
+
+    public int getHealUsed() { 
+        return healUsed; 
+    }
+
+    public boolean isSurvived() { 
+        return survived; 
+    } 
+
+    public Map<String, Integer> getKillsByType() { 
+        return Map.copyOf(killsByType); 
     }
 
     /**

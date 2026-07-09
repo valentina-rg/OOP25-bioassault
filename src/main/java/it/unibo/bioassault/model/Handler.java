@@ -1,5 +1,9 @@
 package it.unibo.bioassault.model;
 
+import it.unibo.bioassault.model.stats.ExperienceSystem;
+import it.unibo.bioassault.model.stats.PlayerStats;
+import it.unibo.bioassault.model.stats.RunStats;
+
 import java.awt.*;
 import java.util.LinkedList;
 
@@ -10,6 +14,22 @@ public class Handler {
 
     private boolean up = false, down = false, right = false, left = false;
 
+
+    private final PlayerStats playerStats = new PlayerStats();
+    private final RunStats runStats = new RunStats();
+    private final ExperienceSystem experienceSystem = new ExperienceSystem(playerStats);
+
+    public PlayerStats getPlayerStats() { 
+        return playerStats; 
+    }
+
+    public RunStats getRunStats() { 
+        return runStats; 
+    }
+
+    public ExperienceSystem getExperienceSystem() { 
+        return experienceSystem; 
+    }
 
     public void tick(){
         //loop che cicla su tutti gli oggetti di gioco

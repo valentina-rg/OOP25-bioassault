@@ -24,6 +24,10 @@ public abstract class Virus extends GameObject {
 
     private boolean isBig;
 
+    // XP awarded on kill
+    private static final double BASE_XP   = 20.0;
+    private static final double BIG_XP_MULT = 2.0;
+
     public Virus(int x, int y, ID id, Handler handler, int hp, float speed) {
         super(x, y, id);
         this.handler = handler;
@@ -34,6 +38,19 @@ public abstract class Virus extends GameObject {
         velX = r.nextInt(7) - 3;
         velY = r.nextInt(7) - 3;
         if (velX == 0 && velY == 0) velX = 1;
+    }
+
+    protected final void checkDeath() {
+        if (VirusCombatUtils.isDead(this)) {
+            final double xp = isBig ? BASE_XP * BIG_XP_MULT : BASE_XP;
+
+            handler.getRunStats().recordKill(this.getClass().getSimpleName(), isBig, false);
+            
+            handler.getRunStats().addXP(xp);
+            handler.getExperienceSystem().addXp(xp);
+
+            handler.removeObject(this);
+        }
     }
 
     /**
@@ -144,12 +161,5 @@ public abstract class Virus extends GameObject {
 
     public boolean isBig() {
         return isBig;
-    }
-
-    public kills(){
-        if (VirusCombatUtils.isDead(this)) {
-            stats.recordKill(this.getClass().getSimpleName(), this.isBig(), false);
-            handler.removeObject(this);
-        }
     }
 }

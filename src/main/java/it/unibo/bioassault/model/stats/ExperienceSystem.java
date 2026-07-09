@@ -18,7 +18,7 @@ public class ExperienceSystem {
     private double currentXP = 0;
     private double xpToNextLevel;
 
-    private final PlayerStats stats;
+    protected final PlayerStats stats;
     private final List<Upgrade> upgradePool = new ArrayList<>();
     private final List<Upgrade> acquiredUpgrades = new ArrayList<>();
     private final List<LevelUpListener> listeners = new ArrayList<>();
@@ -68,7 +68,9 @@ public class ExperienceSystem {
     public void applyUpgrade(Upgrade upgrade) {
         upgrade.apply(stats);
         acquiredUpgrades.add(upgrade);
-        upgradePool.remove(upgrade);
+        if (!upgrade.isAvailable()) {
+            upgradePool.remove(upgrade);
+        }
     }
 
     /**

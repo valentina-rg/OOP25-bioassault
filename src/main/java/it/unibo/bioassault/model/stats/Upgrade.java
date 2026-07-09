@@ -11,19 +11,14 @@ import java.util.function.Consumer;
 
 public class Upgrade {
 
-    private final String                name;
-    private final String                description;
+    private final String name;
+    private final String description;
     private final Consumer<PlayerStats> effect;
-    private int                         stackCount = 0;
-    private final int                   maxStacks;
+    private int stackCount = 0;
+    private final int maxStacks;
 
     /**
      * Factory method to create a non-stackable, single-use upgrade.
-     *
-     * @param name is the name of the upgrade.
-     * @param description is an explanation of the upgrade's effect.
-     * @param effect is the behavior mutating the player's stats.
-     * @return A new single-use Upgrade instance.
      */
     public static Upgrade of(String name, String description, Consumer<PlayerStats> effect) {
         return new Upgrade(name, description, effect, 1);
@@ -31,12 +26,6 @@ public class Upgrade {
 
     /**
      * Factory method to create a stackable upgrade with a defined maximum limit.
-     *
-     * @param name is the name of the upgrade.
-     * @param description is an explanation of the upgrade's effect.
-     * @param effect is the behavior mutating the player's stats.
-     * @param maxStacks is the maximum number of times this upgrade can be applied.
-     * @return A new stackable Upgrade instance.
      */
     public static Upgrade stackable(String name, String description,
                                     Consumer<PlayerStats> effect, int maxStacks) {
@@ -106,8 +95,7 @@ public class Upgrade {
             return Upgrade.stackable(
                 "Velocità +",
                 "Aumenta la velocità di movimento del 10%",
-                stats -> stats.setMoveSpeed(stats. getMoveSpeed() * 1.10f),
-                3
+                stats -> stats.setMoveSpeed(stats. getMoveSpeed() * 1.10f), 3
             );
         }
 
@@ -118,8 +106,7 @@ public class Upgrade {
             return Upgrade.stackable(
                 "Vita massima +",
                 "Aumenta la vita massima di 20",
-                stats -> stats.setMaxHp(stats.getMaxHp() + 20),
-                5
+                stats -> stats.setMaxHp(stats.getMaxHp() + 20), 5
             );
         }
 
@@ -130,8 +117,18 @@ public class Upgrade {
             return Upgrade.stackable(
                 "Danno +",
                 "Aumenta il danno base del 15%",
-                stats -> stats.setDamageMult((int) (stats.getDamageMult() * 1.15f)),
-                5
+                stats -> stats.setDamageMult((int) (stats.getDamageMult() * 1.15f)), 5
+            );
+        }
+
+        /**
+         * Stackable attack speed boost (+10% per stack, max 5 stacks).
+         */
+        public static Upgrade attackSpeedUp() {
+            return Upgrade.stackable(
+                "Velocità d'attacco +",
+                "Aumenta la velocità d'attacco del 10%",
+                stats -> stats.setAttackSpeed(stats.getAttackSpeed() * 1.10f), 5
             );
         }
 
