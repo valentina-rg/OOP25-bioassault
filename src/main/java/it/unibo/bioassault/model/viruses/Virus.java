@@ -5,7 +5,7 @@ import it.unibo.bioassault.model.GameObject;
 import it.unibo.bioassault.model.Handler;
 import it.unibo.bioassault.model.ID;
 import it.unibo.bioassault.model.player.Player;
-import  main.java.it.unibo.bioassault.model.stats.RunStats;
+import it.unibo.bioassault.model.stats.RunStats;
 
 import java.util.Random;
 

@@ -1,4 +1,4 @@
-package main.java.it.unibo.bioassault.model.stats;
+package it.unibo.bioassault.model.stats;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,14 +85,10 @@ public class ExperienceSystem {
         listeners.add(listener);
     }
 
-    /** @return Current level number. */
     public int getLevel() { 
         return level; 
     }
 
-    /**
-     * @return ccumulated current experience points on this specific level
-     */
     public double getCurrentXP() { 
         return currentXP; 
     }
@@ -107,7 +103,6 @@ public class ExperienceSystem {
         return currentXP / xpToNextLevel; 
     }
 
-    /** @return player statistics. */
     public PlayerStats getStats() { 
         return stats; 
     }
