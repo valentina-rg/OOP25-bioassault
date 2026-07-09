@@ -16,6 +16,7 @@ public abstract class Virus extends GameObject {
     protected float mx; // Player Position throu observer
     protected float my; // Player Position throu observer
     protected Player player;
+    protected RunStats stats;
 
     // Attributi che ogni tipo di virus avrà
     protected int hp;
@@ -146,7 +147,7 @@ public abstract class Virus extends GameObject {
         return isBig;
     }
 
-    public kills(){
+    public void kills(){
         if (VirusCombatUtils.isDead(this)) {
             stats.recordKill(this.getClass().getSimpleName(), this.isBig(), false);
             handler.removeObject(this);
