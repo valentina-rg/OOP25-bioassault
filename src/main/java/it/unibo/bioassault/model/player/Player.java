@@ -1,119 +1,218 @@
 package it.unibo.bioassault.model.player;
 
+import it.unibo.bioassault.model.combat.collisions.CollisionSystem;
 import it.unibo.bioassault.model.Game;
-import it.unibo.bioassault.model.combat.Projectile;
 import it.unibo.bioassault.model.GameObject;
 import it.unibo.bioassault.model.Handler;
 import it.unibo.bioassault.model.ID;
-import it.unibo.bioassault.model.viruses.Virus;
+import it.unibo.bioassault.model.combat.Projectile;
+import it.unibo.bioassault.model.combat.weapons.AntibodyWeapon;
+import it.unibo.bioassault.model.combat.weapons.InterferonWeapon;
+import it.unibo.bioassault.model.combat.weapons.Weapon;
 
 import java.awt.*;
 
-//ATTENZIONE: player di prova per verificare lo spawn dei nemici. codice base da migliorare e da espandere
+/**
+ * Rappresenta la cellula controllata dal giocatore.
+ * Gestisce movimento, collisioni, punti vita e utilizzo dell'arma.
+ */  
 public class Player extends GameObject {
 
-    Handler handler;
-    private int hp = 100; // Punti vita iniziali della cellula
-    private int shootCooldown = 0; // Tempo di attesa tra uno sparo e l'altro
+    private final Handler handler;
+    private int hp = 100; 
+    private int shootCooldown = 0; 
+    private float lastDirX = 1;
+    private float lastDirY = 0;
+    public boolean hasStartedMoving = false;
+
+    /**
+    * Armi disponibili per il player.
+    */
+    private final Weapon[] weapons = {
+        new AntibodyWeapon(),
+        new InterferonWeapon()
+    };
+
+    /**
+    * Indice dell'arma attualmente equipaggiata.
+    */
+    private int currentWeaponIndex;
+
+    /**
+    * Indica se il tasto per il cambio arma era già premuto
+    * nel tick precedente.
+    */
+    private boolean switchWeaponWasPressed;
+
+    /**
+     * Crea un nuovo player.
+     *
+     * @param x posizione iniziale orizzontale
+     * @param y posizione iniziale verticale
+     * @param id identificatore dell'oggetto
+     * @param handler gestore degli oggetti
+     */
 
     public Player(int x, int y, ID id, Handler handler) {
-        super(x, y, id);
+        super(x, y, id);      
         this.handler = handler;
     }
 
-    public boolean hasStartedMoving = false;
-
-
+    /**
+     * Aggiorna lo stato del player.
+     */
 
     @Override
     public void tick() {
-        // input -> velocità
+        updateMovement();
+        updateShootingDirection();
+        handleCollisions();
+        updateWeaponSwitch();
+        updateShooting();
+    }
 
-        // ASSE Y
-        if (handler.isUp() && !handler.isDown()) {
-            velY = -5;
-        } else if (handler.isDown() && !handler.isUp()) {
-            velY = 5;
-        } else {
-            velY = 0;
+    /**
+    * Aggiorna la velocità e la posizione del player 
+    */
+
+    private void updateMovement() {
+         if (handler.isUp() && !handler.isDown()) {
+        velY = -5;
+    } else if (handler.isDown() && !handler.isUp()) {
+        velY = 5;
+    } else {
+        velY = 0;
+    }
+
+    if (handler.isRight() && !handler.isLeft()) {
+        velX = 5;
+    } else if (handler.isLeft() && !handler.isRight()) {
+        velX = -5;
+    } else {
+        velX = 0;
+    }
+
+    x += velX;
+    y += velY;
+
+    x = Math.max(0, Math.min(x, Game.WORLD_WIDTH - 32));
+    y = Math.max(0, Math.min(y, Game.WORLD_HEIGHT - 48));
+    }
+
+    /**
+    * Aggiorna la direzione dello sparo quando il player si muove.
+    * Per scelta di gameplay, il proiettile viene sparato nella direzione
+    * opposta rispetto a quella del movimento.
+    */
+    private void updateShootingDirection() {
+        if (velX == 0 && velY == 0) {
+        return;
+    }
+
+    hasStartedMoving = true;
+
+    if (velX > 0) {
+        lastDirX = -1;
+        lastDirY = 0;
+    } else if (velX < 0) {
+        lastDirX = 1;
+        lastDirY = 0;
+    } else if (velY > 0) {
+        lastDirX = 0;
+        lastDirY = -1;
+    } else {
+        lastDirX = 0;
+        lastDirY = 1;
+    }
+    }
+
+    /**
+    * Controlla le collisioni tra il player e i virus.
+    */
+
+    private void handleCollisions() {
+    CollisionSystem.handlePlayerVirusCollisions(handler,this,1);
+    }
+
+    /**
+    * Cambia arma quando viene premuto il tasto dedicato.
+    * Il cambio avviene una sola volta per ogni pressione.
+     */
+    private void updateWeaponSwitch() {
+        if (handler.isSwitchWeapon() && !switchWeaponWasPressed) {
+            currentWeaponIndex = (currentWeaponIndex + 1) % weapons.length;
+    }
+    switchWeaponWasPressed = handler.isSwitchWeapon();
+}
+
+    /**
+     * Gestisce il cooldown e la creazione dei proiettili.
+     */
+
+    private void updateShooting() {
+        if (shootCooldown > 0) {
+            shootCooldown--;
+            return;
         }
 
-        // ASSE X
-        if (handler.isRight() && !handler.isLeft()) {
-            velX = 5;
-        } else if (handler.isLeft() && !handler.isRight()) {
-            velX = -5;
-        } else {
-            velX = 0;
-        }
+    handler.addObject(new Projectile(
+        (int) x + 32,
+        (int) y + 20,
+        handler,
+        lastDirX * weapons[currentWeaponIndex].getProjectileSpeed(),
+        lastDirY * weapons[currentWeaponIndex].getProjectileSpeed(),
+        weapons[currentWeaponIndex].getDamage(),
+        weapons[currentWeaponIndex].getName(),
+        ID.Projectile
+ ));
 
-        x += velX;
-        y += velY;
-        x = Math.max(0, Math.min(x, Game.WORLD_WIDTH - 32));   // 32 = larghezza player
-        y = Math.max(0, Math.min(y, Game.WORLD_HEIGHT - 48));  // 48 = altezza player
-
-        if (velX != 0 || velY != 0) {
-            hasStartedMoving = true;
-
-        }
-        
-
-        // Collisione player-virus
-        for (GameObject obj : handler.object) { // Scorre tutti gli oggetti del gioco
-            if (obj instanceof Virus) { // Controlla solo i virus
-                if (this.getBounds().intersects(obj.getBounds())) { // Se le hitbox si sovrappongono
-                this.takeDamage(1); // Il player perde 1 HP
-                }
-            }
-        }
-
-        if (this.shootCooldown > 0) { // Se il cooldown è attivo
-            this.shootCooldown--; // Diminuisce il cooldown
-        }
-
-        if (this.shootCooldown == 0) { // Se il player può sparare
-            handler.addObject(new Projectile((int) this.x + 32, (int) this.y + 20, handler, 8, 0, 10, id)); // Spara un proiettile verso destra
-            this.shootCooldown = 30; // Imposta il cooldown dello sparo
-        }
+    shootCooldown = 30;
     }
 
 
-
-
-
+    @Override
     public void render(Graphics g) {
-        g.setColor(Color.blue);
+        g.setColor(Color.BLUE);
         g.fillRect((int) x, (int) y, 32, 48);
 
     }
 
-
+    @Override
     public Rectangle getBounds() {
         return new Rectangle((int) x, (int)y, 32, 48);
     }
 
+    /**
+    * Restituisce l'arma attualmente equipaggiata dal player.
+    *
+    * @return arma equipaggiata dal player
+    */
+   
+    public Weapon getWeapon() {
+        return this.weapons[this.currentWeaponIndex];
+    }
+
     // Applica un danno alla cellula
+
     public void takeDamage(final int damage) {
 
-        if (damage < 0) { // Il danno non può essere negativo
-         throw new IllegalArgumentException(
-               "Il danno non può essere negativo"
-         );
+        if (damage < 0) { 
+            throw new IllegalArgumentException("Il danno non può essere negativo");
         }
 
      this.hp = Math.max(
-            0,                  // HP minimi consentiti
-            this.hp - damage    // HP dopo il danno
+            0,                  
+            this.hp - damage   
         );
     }
 
     // Restituisce gli HP correnti della cellula
     public int getHp() {
-        return this.hp; // Restituisce gli HP attuali
+        return this.hp;
     }
 
-    // Verifica se la cellula è morta
+    // Verifica se il player è morto
     public boolean isDead() {
-      return this.hp <= 0; // Morta se gli HP sono pari a zero
+      return this.hp <= 0; 
     }
 }

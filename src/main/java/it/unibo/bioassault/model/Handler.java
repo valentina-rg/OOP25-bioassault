@@ -72,7 +72,6 @@ public class Handler {
 
     private boolean switchWeapon;
 
-
     /**
      * Verifica se è stato premuto il comando per cambiare arma.
      *
@@ -90,6 +89,4 @@ public class Handler {
     public void setSwitchWeapon(final boolean switchWeapon) {
         this.switchWeapon = switchWeapon;
     }
-
-
 }
