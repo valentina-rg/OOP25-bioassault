@@ -122,4 +122,17 @@ public class VirusSpawner {
     final int diff() {
         return (int) (currentSecond - this.begin);
     }
+
+    public int getCurrentWave() {
+        if (diff() < TIME_LEVEL_1) {
+            return 1;
+        }
+        if (diff() < TIME_LEVEL_2) {
+            return 2;
+        }
+        if (diff() < TIME_LEVEL_3) {
+            return 3;
+        }
+        return 4;
+    }
 }
