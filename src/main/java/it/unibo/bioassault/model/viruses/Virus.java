@@ -19,6 +19,7 @@ public abstract class Virus extends GameObject {
     // Attributi che ogni tipo di virus avrà
     protected int hp;
     protected float speed;
+    protected int maxHp;
     protected int choose = 0;
 
     public Virus(int x, int y, ID id, Handler handler, int hp, float speed) {
@@ -26,6 +27,7 @@ public abstract class Virus extends GameObject {
         this.handler = handler;
         this.hp = hp;
         this.speed = speed;
+        this.maxHp = hp;
 
         // Velocità iniziale random comune a tutti i virus
         velX = r.nextInt(7) - 3;
@@ -131,11 +133,15 @@ public abstract class Virus extends GameObject {
     }
 
     /**
-     * Define if a virus is a big one.
-     */
+    * Imposta il virus come grande, raddoppiandone gli HP.
+    *
+    * @param isBig true se il virus deve diventare grande
+    */
+
     public void setIsBig(boolean isBig) {
         if (isBig) {
             this.hp *= 2;
+            this.maxHp *= 2;
         }
     }
 
@@ -157,6 +163,15 @@ public abstract class Virus extends GameObject {
     // Restituisce gli HP correnti del virus
     public int getHp() {
         return this.hp; // Restituisce gli HP attuali del virus
+    }
+
+    /**
+     * Restituisce gli HP massimi del virus.
+     *
+     * @return HP massimi del virus
+    */
+    public int getMaxHp() {
+        return this.maxHp;
     }
 
     // Verifica se il virus è morto

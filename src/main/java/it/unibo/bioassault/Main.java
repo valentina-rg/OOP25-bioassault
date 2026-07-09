@@ -1,13 +1,12 @@
 package it.unibo.bioassault;
 
-import it.unibo.bioassault.model.Game;
+import it.unibo.bioassault.controller.GameController;
 
-
+import javax.swing.SwingUtilities;
 
 public class Main {
-    public static void main(String[] args) {
-        //System.out.println("Il progetto BioAssault è partito!");
-       new Game();
-
+    public static void main(final String[] args) {
+        // GameController crea la finestra e fa partire il game loop.
+        SwingUtilities.invokeLater(GameController::new);
     }
 }

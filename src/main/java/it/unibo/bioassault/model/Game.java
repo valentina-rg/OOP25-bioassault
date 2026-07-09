@@ -1,7 +1,7 @@
 package it.unibo.bioassault.model;
 
 import it.unibo.bioassault.BufferedImageLoader;
-import it.unibo.bioassault.control.KeyInput;
+import it.unibo.bioassault.controller.KeyInput;
 import it.unibo.bioassault.model.player.Player;
 import it.unibo.bioassault.model.viruses.VirusSpawner;
 import it.unibo.bioassault.view.Camera;
@@ -103,7 +103,6 @@ public class Game extends Canvas implements Runnable {
                 frames = 0;
             }
         }
-        stop();
     }
 
     public void tick() {
@@ -178,6 +177,30 @@ public class Game extends Canvas implements Runnable {
 
             }
         }
+    }
+
+    /**
+     * Restituisce l'Handler che gestisce tutti gli oggetti di gioco.
+     * @return handler della partita
+     */
+    public Handler getHandler() {
+        return handler;
+    }
+
+    /**
+     * Restituisce lo spawner dei virus, usato per leggere l'ondata corrente
+     * @return spawner della partita
+     */
+    public VirusSpawner getSpawner() {
+        return spawner;
+    }
+
+    /**
+     * Ferma il motore di gioco dall'esterno (es. quando si torna al menu
+     * principale o si inizia una nuova partita).
+     */
+    public void shutdown() {
+        stop();
     }
 
 }

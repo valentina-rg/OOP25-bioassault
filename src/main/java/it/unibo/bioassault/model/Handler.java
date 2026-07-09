@@ -11,6 +11,8 @@ public class Handler {
     private boolean up = false, down = false, right = false, left = false;
 
 
+
+
     public void tick(){
         //loop che cicla su tutti gli oggetti di gioco
         for(int i = 0; i < object.size(); i++){
@@ -68,4 +70,23 @@ public class Handler {
         this.left = left;
     }
 
+    private boolean switchWeapon;
+
+    /**
+     * Verifica se è stato premuto il comando per cambiare arma.
+     *
+     * @return true se il comando di cambio arma è attivo
+     */
+    public boolean isSwitchWeapon() {
+        return this.switchWeapon;
+    }
+
+    /**
+     * Imposta lo stato del comando per cambiare arma.
+     *
+     * @param switchWeapon nuovo stato del comando
+     */
+    public void setSwitchWeapon(final boolean switchWeapon) {
+        this.switchWeapon = switchWeapon;
+    }
 }
