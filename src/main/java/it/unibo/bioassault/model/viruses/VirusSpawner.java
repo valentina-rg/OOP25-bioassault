@@ -7,7 +7,7 @@ import java.util.Random;
 public class VirusSpawner {
 
     private static final int TIME_LEVEL_1 = 20; // fino a 20s: solo Spike, spawn dolce
-    private static final int BOSS_TIME = 55;    // al secondo 55: spawn boss (una tantum)
+    private static final int BOSS_TIME = 45;    // al secondo 45: spawn boss (una tantum)
 
     private static final int SPAWN_RATE_SLOW = 1;      // virus al secondo, fase 1 (solo Spike)
     private static final int SPAWN_RATE_MIN_PHASE2 = 2; // virus al secondo, inizio fase 2
@@ -119,7 +119,7 @@ public class VirusSpawner {
         return (int) (currentSecond - this.begin);
     }
 
-    public int getCurrentWave() {
+   /* public int getCurrentWave() {
         if (diff() < TIME_LEVEL_1) {
             return 1;
         }
@@ -130,5 +130,5 @@ public class VirusSpawner {
             return 3;
         }
         return 4;
-    }
+    }*/
 }
