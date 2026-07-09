@@ -24,7 +24,7 @@ public class KeyInput extends KeyAdapter {
 
     /**
      * Viene chiamato automaticamente ogni volta che si preme un tasto.
-     * Uso lo switch con pattern multipli (Java 14+) per tenere il codice piu' compatto.
+     * Uso lo switch con pattern multipli per tenere il codice piu' compatto.
      * Ho aggiunto anche le frecce direzionali come alternativa a WASD.
      */
     @Override
@@ -34,6 +34,7 @@ public class KeyInput extends KeyAdapter {
             case KeyEvent.VK_S, KeyEvent.VK_DOWN  -> handler.setDown(true);
             case KeyEvent.VK_A, KeyEvent.VK_LEFT  -> handler.setLeft(true);
             case KeyEvent.VK_D, KeyEvent.VK_RIGHT -> handler.setRight(true);
+            case KeyEvent.VK_Q -> handler.setSwitchWeapon(true);
             default -> { } // altri tasti: non faccio nulla
         }
     }
@@ -49,6 +50,7 @@ public class KeyInput extends KeyAdapter {
             case KeyEvent.VK_S, KeyEvent.VK_DOWN  -> handler.setDown(false);
             case KeyEvent.VK_A, KeyEvent.VK_LEFT  -> handler.setLeft(false);
             case KeyEvent.VK_D, KeyEvent.VK_RIGHT -> handler.setRight(false);
+            case KeyEvent.VK_Q -> handler.setSwitchWeapon(false);
             default -> { }
         }
     }
