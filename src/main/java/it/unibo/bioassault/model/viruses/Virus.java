@@ -5,6 +5,7 @@ import it.unibo.bioassault.model.GameObject;
 import it.unibo.bioassault.model.Handler;
 import it.unibo.bioassault.model.ID;
 import it.unibo.bioassault.model.player.Player;
+import it.unibo.bioassault.model.stats.RunStats;
 
 import java.util.Random;
 
@@ -15,12 +16,15 @@ public abstract class Virus extends GameObject {
     protected float mx; // Player Position throu observer
     protected float my; // Player Position throu observer
     protected Player player;
+    protected RunStats stats;
 
     // Attributi che ogni tipo di virus avrà
     protected int hp;
     protected float speed;
     protected int maxHp;
     protected int choose = 0;
+
+    private boolean isBig;
 
     public Virus(int x, int y, ID id, Handler handler, int hp, float speed) {
         super(x, y, id);
@@ -133,16 +137,14 @@ public abstract class Virus extends GameObject {
     }
 
     /**
-    * Imposta il virus come grande, raddoppiandone gli HP.
-    *
-    * @param isBig true se il virus deve diventare grande
-    */
-
+     * Define if a virus is a big one.
+     */
     public void setIsBig(boolean isBig) {
         if (isBig) {
             this.hp *= 2;
             this.maxHp *= 2;
         }
+        this.isBig = isBig;
     }
 
     // Applica un danno al virus
@@ -156,9 +158,19 @@ public abstract class Virus extends GameObject {
                 0,                  // HP minimi consentiti
                 this.hp - damage    // HP dopo il danno
         );
+    public boolean isBig() {
+        return isBig;
+    }
 
         this.checkDeath(); // Dopo aver subito danno, controlla se il virus deve morire
     }
+    public void kills(){
+        if (VirusCombatUtils.isDead(this)) {
+            stats.recordKill(this.getClass().getSimpleName(), this.isBig(), false);
+            handler.removeObject(this);
+        }
+    }
+}
 
     // Restituisce gli HP correnti del virus
     public int getHp() {
