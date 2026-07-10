@@ -1,99 +1,72 @@
-package it.unibo.bioassault.model.combat;
+package it.unibo.bioassault.model.combat.collisions;
 
-import it.unibo.bioassault.model.Handler;
+import it.unibo.bioassault.model.GameObject;
 import it.unibo.bioassault.model.ID;
-import it.unibo.bioassault.model.viruses.Virus;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Test automatici per la classe Projectile.
+ * Test relativi al riconoscimento delle collisioni tra hitbox.
  */
-class ProjectileTest {
+class CollisionSystemTest {
 
     /**
-     * Virus fittizio usato solo per i test, dato che Virus è astratta.
+     * Oggetto fittizio utilizzato esclusivamente per creare
+     * hitbox con posizione e dimensioni controllate.
      */
-    private static class TestVirus extends Virus {
-        TestVirus(final int x, final int y, final Handler handler, final int hp) {
-            super(x, y, ID.Enemy, handler, hp, 1.0f);
+    private static class DummyGameObject extends GameObject {
+
+        DummyGameObject(final int x, final int y) {
+            super(x, y, ID.Enemy);
         }
 
         @Override
         public void tick() {
+            // Nessun aggiornamento necessario per questo test.
         }
 
         @Override
-        public void render(final java.awt.Graphics g) {
+        public void render(final Graphics g) {
+            // Nessun rendering necessario per questo test.
         }
 
         @Override
-        public java.awt.Rectangle getBounds() {
-            return new java.awt.Rectangle((int) getX(), (int) getY(), 32, 32);
+        public Rectangle getBounds() {
+            return new Rectangle(
+                    (int) getX(),
+                    (int) getY(),
+                    10,
+                    10
+            );
         }
     }
 
+    /**
+     * Verifica che due hitbox sovrapposte siano considerate
+     * in collisione e che due hitbox separate non lo siano.
+     */
     @Test
-    void projectileShouldMoveAccordingToVelocity() {
-        final Handler handler = new Handler();
-        final Projectile projectile = new Projectile(10, 20, handler, 2f, 3f, 5, ID.Projectile);
+    void collidesShouldRecognizeOverlappingAndSeparatedBounds() {
+        final GameObject first =
+                new DummyGameObject(0, 0);
 
-        projectile.tick();
+        final GameObject overlapping =
+                new DummyGameObject(5, 5);
 
-        assertEquals(12f, projectile.getX(), 0.0001f);
-        assertEquals(23f, projectile.getY(), 0.0001f);
-    }
+        final GameObject separated =
+                new DummyGameObject(20, 20);
 
-    @Test
-    void projectileShouldDamageVirusAndRemoveItselfOnCollision() {
-        final Handler handler = new Handler();
+        assertTrue(
+                CollisionSystem.collides(first, overlapping)
+        );
 
-        final Virus virus = new TestVirus(50, 50, handler, 20);
-        final Projectile projectile = new Projectile(50, 50, handler, 0f, 0f, 10, ID.Projectile);
-
-        handler.addObject(virus);
-        handler.addObject(projectile);
-
-        final int initialHp = virus.getHp();
-
-        projectile.tick();
-
-        assertEquals(initialHp - 10, virus.getHp());
-        assertFalse(handler.object.contains(projectile));
-    }
-
-    @Test
-    void projectileShouldNotBeRemovedWhenNoCollisionOccurs() {
-        final Handler handler = new Handler();
-
-        final Virus virus = new TestVirus(500, 500, handler, 20);
-        final Projectile projectile = new Projectile(10, 10, handler, 0f, 0f, 10, ID.Projectile);
-
-        handler.addObject(virus);
-        handler.addObject(projectile);
-
-        final int initialHp = virus.getHp();
-
-        projectile.tick();
-
-        assertEquals(initialHp, virus.getHp());
-        assertTrue(handler.object.contains(projectile));
-    }
-
-    @Test
-    void projectileShouldKillVirusWhenDamageExceedsHp() {
-        final Handler handler = new Handler();
-
-        final Virus virus = new TestVirus(50, 50, handler, 5);
-        final Projectile projectile = new Projectile(50, 50, handler, 0f, 0f, 10, ID.Projectile);
-
-        handler.addObject(virus);
-        handler.addObject(projectile);
-
-        projectile.tick();
-
-        assertTrue(virus.isDead());
-        assertEquals(0, virus.getHp());
+        assertFalse(
+                CollisionSystem.collides(first, separated)
+        );
     }
 }
