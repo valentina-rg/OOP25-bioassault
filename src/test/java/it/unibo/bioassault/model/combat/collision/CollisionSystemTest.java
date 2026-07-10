@@ -1,7 +1,8 @@
-package it.unibo.bioassault.model.combat.collisions;
+package it.unibo.bioassault.model.combat.collision;
 
 import it.unibo.bioassault.model.GameObject;
 import it.unibo.bioassault.model.ID;
+import it.unibo.bioassault.model.combat.collisions.CollisionSystem;
 import org.junit.jupiter.api.Test;
 
 import java.awt.Graphics;
@@ -13,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Test relativi al riconoscimento delle collisioni tra hitbox.
  */
-class CollisionSystemTest {
+class ProjectileTest  {
 
     /**
      * Oggetto fittizio utilizzato esclusivamente per creare

@@ -27,7 +27,7 @@ class WeaponTest {
         );
 
         assertEquals("Interferon", interferon.getName());
-        assertEquals(20, interferon.getDamage());
+        assertEquals(42, interferon.getDamage());
         assertEquals(
                 5.0f,
                 interferon.getProjectileSpeed(),
