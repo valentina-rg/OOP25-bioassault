@@ -3,6 +3,7 @@ package it.unibo.bioassault.controller;
 import it.unibo.bioassault.model.Game;
 import it.unibo.bioassault.model.GameObject;
 import it.unibo.bioassault.model.Handler;
+import it.unibo.bioassault.model.ID;
 import it.unibo.bioassault.model.player.Player;
 import it.unibo.bioassault.view.GameScreens;
 import it.unibo.bioassault.view.GameWindow;
@@ -22,6 +23,10 @@ public class GameController {
 
     private static final int FRAME_MS = 16;
 
+    // Durata massima di una partita: raggiunto questo tempo con il player
+    // ancora vivo, la run finisce in vittoria invece che per morte.
+    private static final int SURVIVAL_TIME_LIMIT_SECONDS = 90;
+
     private State state = State.MENU;
 
     private Game game;
@@ -36,6 +41,11 @@ public class GameController {
 
     private long startTimeMs;
     private int lastSurvivalSeconds;
+
+    // NOTA TEMPORANEA (solo test locale, non committare): conteggio uccisioni
+    // provvisorio, in attesa del sistema statistiche vero di Rebecca.
+    private int enemiesKilled;
+    private int lastEnemyCount;
 
     public GameController() {
         showMainMenu();
@@ -98,12 +108,15 @@ public class GameController {
         window.requestFocusInWindow();
 
         startTimeMs = System.currentTimeMillis();
+        enemiesKilled = 0;
+        lastEnemyCount = countEnemies();
         state = State.PLAYING;
 
         hudLoop = new Timer(FRAME_MS, e -> {
             if (state != State.PLAYING) {
                 return;
             }
+            updateKillCount();
             checkGameOver();
             if (state == State.PLAYING) {
                 window.updateGameState(snapshotBuilder.build(handler, startTimeMs));
@@ -130,6 +143,26 @@ public class GameController {
             }
         }
         return null;
+    }
+
+    // NOTA TEMPORANEA (solo test locale, non committare): conteggio uccisioni
+    // provvisorio, in attesa del sistema statistiche vero di Rebecca (RunStats).
+    private int countEnemies() {
+        int count = 0;
+        for (final GameObject obj : handler.object) {
+            if (obj.getId() == ID.Enemy) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private void updateKillCount() {
+        final int currentEnemyCount = countEnemies();
+        if (currentEnemyCount < lastEnemyCount) {
+            enemiesKilled += lastEnemyCount - currentEnemyCount;
+        }
+        lastEnemyCount = currentEnemyCount;
     }
 
     private void togglePause() {
@@ -159,20 +192,25 @@ public class GameController {
     }
 
     private void checkGameOver() {
+        final int elapsedSeconds = (int) ((System.currentTimeMillis() - startTimeMs) / 1000);
+
         if (player != null && player.isDead()) {
-            lastSurvivalSeconds = (int) ((System.currentTimeMillis() - startTimeMs) / 1000);
-            showGameOver();
+            lastSurvivalSeconds = elapsedSeconds;
+            showEndScreen(false);
+        } else if (elapsedSeconds >= SURVIVAL_TIME_LIMIT_SECONDS) {
+            lastSurvivalSeconds = elapsedSeconds;
+            showEndScreen(true);
         }
     }
 
-    private void showGameOver() {
+    private void showEndScreen(final boolean victory) {
         state = State.GAME_OVER;
         hudLoop.stop();
 
         final GameScreens.GameOverScreen.Stats stats =
                 new GameScreens.GameOverScreen.Stats(
                         lastSurvivalSeconds,
-                        1, 1, 0, 0, false);
+                        game.getSpawner().getCurrentWave(), 1, enemiesKilled, 0, victory);
 
         window.showOverlay(new GameScreens.GameOverScreen(
                 stats,
