@@ -7,8 +7,8 @@ import it.unibo.bioassault.model.stats.RunStats;
 import it.unibo.bioassault.model.viruses.VirusSpawner;
 import it.unibo.bioassault.view.Camera;
 import it.unibo.bioassault.view.Window;
-//import it.unibo.bioassault.view.GameOverScreen;
-//import it.unibo.bioassault.view.LevelUpScreen; 
+import it.unibo.bioassault.view.GameOverScreen;
+import it.unibo.bioassault.view.LevelUpScreen; 
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
@@ -40,6 +40,7 @@ public class Game extends Canvas implements Runnable {
     private boolean gameOver  = false;   // true after endRun()
     private boolean paused = false;   // true while level-up screen is open
     private boolean survived = false;
+
     private LevelUpScreen  levelUpScreen;
     private GameOverScreen gameOverScreen;
 
@@ -107,7 +108,10 @@ public class Game extends Canvas implements Runnable {
             lastTime = now;
 
             while (delta > 1) {
-                tick();
+                if (!paused && !gameOver){
+                   tick(); 
+                }
+                
                 delta -= 1;
                 // frames++;
             }
@@ -208,7 +212,7 @@ public class Game extends Canvas implements Runnable {
         }
     }
 
-        /** Call this to trigger the game-over screen (e.g. when player HP reaches 0). */
+    /** Call this to trigger the game-over screen (e.g. when player HP reaches 0). */
     public void triggerGameOver(boolean survived) {
         this.survived = survived;
         this.gameOver = true;
