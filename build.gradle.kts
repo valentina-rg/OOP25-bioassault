@@ -40,3 +40,15 @@ tasks.jar {
         if (it.isDirectory) it else zipTree(it)
     })
 }
+
+tasks.register<Copy>("deliverJar") {
+    dependsOn(tasks.jar)
+    from(tasks.jar)
+    into(layout.projectDirectory)
+    rename { "bioassault.jar" }
+    doNotTrackState("Copies the final deliverable JAR to the project root.")
+}
+
+tasks.build {
+    finalizedBy("deliverJar")
+}
