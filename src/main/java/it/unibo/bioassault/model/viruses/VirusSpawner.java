@@ -64,6 +64,16 @@ public class VirusSpawner implements ITickingObject {
         spawnViruses();
     }
 
+    public int getCurrentWave() {
+        if (bossSpawned) {
+            return 3;
+        }
+        if (diff() < TIME_LEVEL_1) {
+            return 1;
+        }
+        return 2;
+    }
+
     private void updateSpawnRate() {
         final int elapsed = diff();
 
