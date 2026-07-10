@@ -16,6 +16,7 @@ public abstract class Virus extends GameObject {
     protected float mx; // Player Position throu observer
     protected float my; // Player Position throu observer
     protected Player player;
+    protected RunStats stats;
 
     // Attributi che ogni tipo di virus avrà
     protected int hp;
