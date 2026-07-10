@@ -8,7 +8,7 @@ import it.unibo.bioassault.model.player.Player;
 
 import java.util.Random;
 
-public abstract class Virus extends GameObject {
+public abstract class Virus extends GameObject implements IVirus{
 
     protected Handler handler;
     protected Random r = new Random();
