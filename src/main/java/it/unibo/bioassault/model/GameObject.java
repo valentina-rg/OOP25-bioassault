@@ -4,7 +4,7 @@ package it.unibo.bioassault.model;
 
 import java.awt.*;
 
-public abstract class GameObject {
+public abstract class GameObject implements IGameObject {
 
     protected float x, y; //posizione dell'oggetto
     protected float velX = 0, velY = 0; //velocità oggetto

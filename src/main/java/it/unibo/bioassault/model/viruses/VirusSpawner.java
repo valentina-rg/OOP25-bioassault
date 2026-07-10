@@ -1,10 +1,11 @@
 package it.unibo.bioassault.model.viruses;
 
+import it.unibo.bioassault.controller.ITickingObject;
 import it.unibo.bioassault.model.Handler;
 
 import java.util.Random;
 
-public class VirusSpawner {
+public class VirusSpawner implements ITickingObject {
 
     private static final int TIME_LEVEL_1 = 20;
     private static final int BOSS_TIME = 45;
